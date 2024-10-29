@@ -93,6 +93,36 @@ const Category = new Hono<{
         return HandleError(c, error, "カテゴリー編集エラー");
       }
     },
+  )
+
+  /**
+   * カテゴリー削除API
+   * @route DELETE /api/categories/:category_id
+   * @middleware validateAdminMiddleware - 管理者権限の検証
+   * @returns 削除したカテゴリー
+   * @throws CategoryNotFoundError
+   * @throws カテゴリー削除エラー
+   */
+  .delete(
+    "/:category_id",
+    validateAdminMiddleware,
+    zValidator("param", z.object({ category_id: z.string() })),
+    async (c) => {
+      const { category_id: categoryId } = c.req.valid("param");
+      const categoryUseCase = c.get("categoryUseCase");
+      try {
+        const category: Category = await categoryUseCase.deleteCategory(
+          categoryId,
+        );
+        return c.json(category);
+      } catch (error) {
+        if (error instanceof CategoryNotFoundError) {
+          console.error(`存在しないカテゴリーです: ID ${categoryId}`);
+          return c.json({ error: Messages.MSG_ERR_003(Entity.CATEGORY) }, 404);
+        }
+        return HandleError(c, error, "カテゴリー削除エラー");
+      }
+    },
   );
 
 export default Category;
