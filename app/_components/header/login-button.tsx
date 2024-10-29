@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ClerkLoading,
   ClerkLoaded,
@@ -18,7 +20,7 @@ export const LoginButton = () => {
       </ClerkLoading>
       <ClerkLoaded>
         <SignedIn>
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         </SignedIn>
         <SignedOut>
           <SignInButton forceRedirectUrl="/courses" mode="modal">
