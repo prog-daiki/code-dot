@@ -1,10 +1,11 @@
 "use client";
 
+import { Menu } from "lucide-react";
+import { useState } from "react";
+
 import { HeaderLogo } from "@/app/_components/header/header-logo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
 import { Sidebar } from "./sidebar";
-import { useState } from "react";
 
 interface MobileHeaderNavProps {
   isAdmin: boolean;
