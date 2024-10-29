@@ -1,6 +1,6 @@
 import { SearchInput } from "@/app/_components/common/search-input";
 import { CategoryList } from "@/features/category/components/category-list";
-// import { CourseList } from "@/features/course/components/client/course-list";
+import { CourseList } from "@/features/course/components/course-list";
 
 interface CoursesPageProps {
   searchParams: {
@@ -15,7 +15,7 @@ const CoursesPage = ({ searchParams }: CoursesPageProps) => {
       <CategoryList />
       <SearchInput />
       <div className="mt-4">
-        {/* <CourseList searchParams={searchParams} /> */}
+        <CourseList searchParams={searchParams} />
       </div>
     </div>
   );

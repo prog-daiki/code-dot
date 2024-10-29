@@ -1,8 +1,10 @@
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { handle } from "hono/vercel";
-import Category from "./core/category";
 import { clerkMiddleware } from "@hono/clerk-auth";
+
+import Category from "./core/category";
+import Course from "./core/course";
 
 export const runtime = "nodejs";
 
@@ -17,7 +19,7 @@ app.use(
   logger(),
 );
 
-const routes = app.route("/categories", Category);
+const routes = app.route("/categories", Category).route("/courses", Course);
 
 export const GET = handle(app);
 export const POST = handle(app);
