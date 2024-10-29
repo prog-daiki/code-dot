@@ -1,8 +1,15 @@
 import { Hono } from "hono";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+
 import { validateAuthMiddleware } from "../../auth/validate-auth-middleware";
 import type { Category } from "./types/category";
 import { CategoryUseCase } from "./usecase/category-usecase";
 import { HandleError } from "../../error/handle-error";
+import { insertCategorySchema } from "@/db/schema";
+import { validateAdminMiddleware } from "../../auth/validate-admin-middleware";
+import { Entity, Messages } from "../../common/message";
+import { CategoryNotFoundError } from "../../error/category-not-found-error";
 
 const Category = new Hono<{
   Variables: {
@@ -28,6 +35,64 @@ const Category = new Hono<{
     } catch (error) {
       return HandleError(c, error, "カテゴリー一覧取得エラー");
     }
-  });
+  })
+
+  /**
+   * カテゴリー登録API
+   * @route POST /api/categories
+   * @middleware validateAdminMiddleware - 管理者権限の検証
+   * @returns 登録したカテゴリー
+   * @throws カテゴリー登録エラー
+   */
+  .post(
+    "/",
+    validateAdminMiddleware,
+    zValidator("json", insertCategorySchema.pick({ name: true })),
+    async (c) => {
+      const validatedData = c.req.valid("json");
+      const categoryUseCase = c.get("categoryUseCase");
+      try {
+        const category: Category = await categoryUseCase.registerCategory(
+          validatedData.name,
+        );
+        return c.json(category);
+      } catch (error) {
+        return HandleError(c, error, "カテゴリー登録エラー");
+      }
+    },
+  )
+
+  /**
+   * カテゴリー編集API
+   * @route PUT /api/categories/:category_id
+   * @middleware validateAdminMiddleware - 管理者権限の検証
+   * @returns 更新したカテゴリー
+   * @throws CategoryNotFoundError
+   * @throws カテゴリー編集エラー
+   */
+  .put(
+    "/:category_id",
+    validateAdminMiddleware,
+    zValidator("param", z.object({ category_id: z.string() })),
+    zValidator("json", insertCategorySchema.pick({ name: true })),
+    async (c) => {
+      const validatedData = c.req.valid("json");
+      const { category_id: categoryId } = c.req.valid("param");
+      const categoryUseCase = c.get("categoryUseCase");
+      try {
+        const category: Category = await categoryUseCase.updateCategoryName(
+          categoryId,
+          validatedData.name,
+        );
+        return c.json(category);
+      } catch (error) {
+        if (error instanceof CategoryNotFoundError) {
+          console.error(`存在しないカテゴリーです: ID ${categoryId}`);
+          return c.json({ error: Messages.MSG_ERR_003(Entity.CATEGORY) }, 404);
+        }
+        return HandleError(c, error, "カテゴリー編集エラー");
+      }
+    },
+  );
 
 export default Category;
