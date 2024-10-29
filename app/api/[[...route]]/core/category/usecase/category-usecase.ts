@@ -47,4 +47,20 @@ export class CategoryUseCase {
 
     return await this.categoryRepository.updateCategory(categoryId, { name });
   }
+
+  /**
+   * カテゴリーを削除する
+   * @param categoryId カテゴリーID
+   * @returns 削除したカテゴリー
+   */
+  async deleteCategory(categoryId: string): Promise<Category> {
+    // カテゴリーの存在チェック
+    const isCategoryExists: boolean =
+      await this.categoryRepository.isCategoryExists(categoryId);
+    if (!isCategoryExists) {
+      throw new CategoryNotFoundError();
+    }
+
+    return await this.categoryRepository.deleteCategory(categoryId);
+  }
 }
