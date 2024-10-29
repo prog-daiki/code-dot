@@ -1,7 +1,7 @@
 import { db } from "@/db/drizzle";
 import { Category } from "../types/category";
 import { category } from "@/db/schema";
-import { asc } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 
 /**
@@ -32,6 +32,47 @@ export class CategoryRepository {
         id: createId(),
         name,
       })
+      .returning();
+    return data;
+  }
+
+  /**
+   * カテゴリーをIDで取得する
+   * @param id カテゴリーのID
+   * @returns {Promise<Category | null>} カテゴリー
+   */
+  async getCategoryById(id: string): Promise<Category | null> {
+    const [data]: Category[] = await db
+      .select()
+      .from(category)
+      .where(eq(category.id, id));
+    return data;
+  }
+
+  /**
+   * カテゴリーが存在するかを確認する
+   * @param id カテゴリーのID
+   * @returns {Promise<boolean>} カテゴリーが存在するかどうか
+   */
+  async isCategoryExists(id: string): Promise<boolean> {
+    const category: Category | null = await this.getCategoryById(id);
+    return !!category;
+  }
+
+  /**
+   * カテゴリーを更新する
+   * @param categoryId カテゴリーID
+   * @param updateData 更新するデータ
+   * @returns {Promise<Category>} 更新したカテゴリー
+   */
+  async updateCategory(
+    categoryId: string,
+    updateData: Partial<Omit<typeof category.$inferInsert, "id">>,
+  ): Promise<Category> {
+    const [data]: Category[] = await db
+      .update(category)
+      .set({ ...updateData })
+      .where(eq(category.id, categoryId))
       .returning();
     return data;
   }
