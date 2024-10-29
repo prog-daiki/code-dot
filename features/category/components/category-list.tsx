@@ -1,7 +1,8 @@
 "use client";
 
-import { Skeleton } from "@/components/ui/skeleton";
 import { useSearchParams } from "next/navigation";
+
+import { Skeleton } from "@/components/ui/skeleton";
 import { useGetCategories } from "../api/use-get-categories";
 import { CategoryItem } from "./category-item";
 
