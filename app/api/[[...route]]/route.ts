@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { handle } from "hono/vercel";
-import Category from "./core/category";
 import { clerkMiddleware } from "@hono/clerk-auth";
+
+import Category from "./core/category";
 
 export const runtime = "nodejs";
 
