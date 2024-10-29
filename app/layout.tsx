@@ -1,7 +1,6 @@
 import { jaJP } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter, Noto_Sans_JP } from "next/font/google";
-
 import type { Metadata } from "next";
 
 import "./globals.css";
