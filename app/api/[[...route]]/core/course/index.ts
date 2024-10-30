@@ -244,6 +244,39 @@ const Course = new Hono<{
         return HandleError(c, error, "講座詳細編集エラー");
       }
     },
+  )
+
+  /**
+   * 講座サムネイル編集API
+   * @route PUT /api/courses/:course_id/thumbnail
+   * @middleware validateAdminMiddleware - 管理者権限の検証
+   * @returns 更新した講座
+   * @throws CourseNotFoundError
+   * @throws 講座サムネイル編集エラー
+   */
+  .put(
+    "/:course_id/thumbnail",
+    validateAdminMiddleware,
+    zValidator("json", insertCourseSchema.pick({ imageUrl: true })),
+    zValidator("param", z.object({ course_id: z.string() })),
+    async (c) => {
+      const validatedData = c.req.valid("json");
+      const { course_id: courseId } = c.req.valid("param");
+      const courseUseCase = c.get("courseUseCase");
+      try {
+        const course: Course = await courseUseCase.updateCourseThumbnail(
+          courseId,
+          validatedData.imageUrl,
+        );
+        return c.json(course);
+      } catch (error) {
+        if (error instanceof CourseNotFoundError) {
+          console.error(`存在しない講座です: ID ${courseId}`);
+          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+        }
+        return HandleError(c, error, "講座サムネイル編集エラー");
+      }
+    },
   );
 
 export default Course;
