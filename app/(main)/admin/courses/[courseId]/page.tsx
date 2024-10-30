@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { Banner } from "@/app/_components/common/banner";
 import { useGetChapters } from "@/features/chapter/api/use-get-chapters";
 import { IconBadge } from "@/app/_components/common/icon-badge";
+import { CourseActions } from "@/features/course/components/admin/course-actions";
 
 const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
   const { courseId } = params;
@@ -64,11 +65,11 @@ const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
               入力済みの必須項目 {completionText}
             </span>
           </div>
-          {/* <Actions
+          <CourseActions
             courseId={courseId}
             disabled={!isComplete}
             isPublished={course.publishFlag!}
-          /> */}
+          />
         </div>
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-4">
