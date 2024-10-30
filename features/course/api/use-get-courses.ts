@@ -1,10 +1,12 @@
-import { client } from "@/lib/hono";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { InferResponseType } from "hono";
 
-import { AdminCourse } from "@/app/api/[[...route]]/core/course/types/admin-course";
+import { client } from "@/lib/hono";
 
-export const useGetCourses = (): UseQueryResult<AdminCourse[], Error> => {
-  return useQuery<AdminCourse[], Error>({
+type ResponseType = InferResponseType<(typeof client.api.courses)["$get"]>;
+
+export const useGetCourses = (): UseQueryResult<ResponseType, Error> => {
+  return useQuery<ResponseType, Error>({
     queryKey: ["courses"],
     queryFn: async () => {
       const response = await client.api.courses.$get();
@@ -13,16 +15,7 @@ export const useGetCourses = (): UseQueryResult<AdminCourse[], Error> => {
         throw new Error(`講座一覧取得に失敗しました: ${response.statusText}`);
       }
 
-      const data: any[] = await response.json();
-      const formattedData: AdminCourse[] = data.map((item) => ({
-        ...item,
-        course: {
-          ...item.course,
-          createDate: new Date(item.course.createDate),
-          updateDate: new Date(item.course.updateDate),
-        },
-      }));
-      return formattedData;
+      return await response.json();
     },
   });
 };
