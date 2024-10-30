@@ -1,3 +1,4 @@
+import { CategoryNotFoundError } from "../../../error/category-not-found-error";
 import { CourseNotFoundError } from "../../../error/course-not-found-error";
 import { CategoryRepository } from "../../category/repository/category-repository";
 import { CourseRepository } from "../repository/course-repository";
@@ -185,5 +186,33 @@ export class CourseUseCase {
     }
 
     return await this.courseRepository.updateCourse(courseId, { price });
+  }
+
+  /**
+   * 講座のカテゴリーを更新する
+   * @param courseId 講座ID
+   * @param categoryId カテゴリーID
+   * @returns 更新された講座
+   */
+  async updateCourseCategory(
+    courseId: string,
+    categoryId: string,
+  ): Promise<Course> {
+    // 講座の存在チェック
+    const isCourseExists: boolean = await this.courseRepository.isCourseExists(
+      courseId,
+    );
+    if (!isCourseExists) {
+      throw new CourseNotFoundError();
+    }
+
+    // カテゴリーの存在チェック
+    const isCategoryExists: boolean =
+      await this.categoryRepository.isCategoryExists(categoryId);
+    if (!isCategoryExists) {
+      throw new CategoryNotFoundError();
+    }
+
+    return await this.courseRepository.updateCourse(courseId, { categoryId });
   }
 }

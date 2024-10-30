@@ -14,6 +14,7 @@ import { Entity, Messages } from "../../common/message";
 import { CourseNotFoundError } from "../../error/course-not-found-error";
 import { PublishCourseWithMuxData } from "./types/publish-course-with-muxdata";
 import { insertCourseSchema } from "@/db/schema";
+import { CategoryNotFoundError } from "../../error/category-not-found-error";
 
 const Course = new Hono<{
   Variables: {
@@ -308,6 +309,44 @@ const Course = new Hono<{
           return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
         }
         return HandleError(c, error, "講座価格編集エラー");
+      }
+    },
+  )
+
+  /**
+   * 講座カテゴリー編集API
+   * @route PUT /api/courses/:course_id/category
+   * @middleware validateAdminMiddleware - 管理者権限の検証
+   * @returns 更新した講座
+   * @throws CourseNotFoundError
+   * @throws 講座カテゴリー編集エラー
+   */
+  .put(
+    "/:course_id/category",
+    validateAdminMiddleware,
+    zValidator("json", insertCourseSchema.pick({ categoryId: true })),
+    zValidator("param", z.object({ course_id: z.string() })),
+    async (c) => {
+      const validatedData = c.req.valid("json");
+      const { course_id: courseId } = c.req.valid("param");
+      const courseUseCase = c.get("courseUseCase");
+      try {
+        const course: Course = await courseUseCase.updateCourseCategory(
+          courseId,
+          validatedData.categoryId,
+        );
+        return c.json(course);
+      } catch (error) {
+        if (error instanceof CourseNotFoundError) {
+          console.error(`存在しない講座です: ID ${courseId}`);
+          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+        } else if (error instanceof CategoryNotFoundError) {
+          console.error(
+            `存在しないカテゴリーです: ID ${validatedData.categoryId}`,
+          );
+          return c.json({ error: Messages.MSG_ERR_003(Entity.CATEGORY) }, 404);
+        }
+        return HandleError(c, error, "講座カテゴリー編集エラー");
       }
     },
   );
