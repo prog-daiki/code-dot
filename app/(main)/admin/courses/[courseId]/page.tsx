@@ -9,16 +9,14 @@ import { Banner } from "@/app/_components/common/banner";
 import { useGetChapters } from "@/features/chapter/api/use-get-chapters";
 import { IconBadge } from "@/app/_components/common/icon-badge";
 import { CourseActions } from "@/features/course/components/admin/course-actions";
+import { CourseTitleForm } from "@/features/course/components/admin/course-title-form";
+import { CourseDescriptionForm } from "@/features/course/components/admin/course-description-form";
+import { CourseImageForm } from "@/features/course/components/admin/course-image-form";
 
 const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
   const { courseId } = params;
-  const {
-    data: course,
-    isLoading: courseLoading,
-    isError,
-  } = useGetCourse(courseId);
-  const { data: chapters = [], isLoading: chaptersLoading } =
-    useGetChapters(courseId);
+  const { data: course, isLoading: courseLoading, isError } = useGetCourse(courseId);
+  const { data: chapters = [], isLoading: chaptersLoading } = useGetChapters(courseId);
 
   if (courseLoading || chaptersLoading) {
     return (
@@ -61,15 +59,9 @@ const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
             <h1 className="text-2xl font-bold">講座設定</h1>
-            <span className="text-sm text-slate-700">
-              入力済みの必須項目 {completionText}
-            </span>
+            <span className="text-sm text-slate-700">入力済みの必須項目 {completionText}</span>
           </div>
-          <CourseActions
-            courseId={courseId}
-            disabled={!isComplete}
-            isPublished={course.publishFlag!}
-          />
+          <CourseActions courseId={courseId} disabled={!isComplete} isPublished={course.publishFlag!} />
         </div>
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-4">
@@ -77,18 +69,9 @@ const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
               <IconBadge icon={LayoutDashboard} />
               <h2 className="text-xl font-semibold">講座のカスタマイズ</h2>
             </div>
-            {/* <CourseTitleForm
-              courseId={courseId}
-              defaultValues={{ title: course.title }}
-            /> */}
-            {/* <CourseDescriptionForm
-              courseId={courseId}
-              defaultValues={{ description: course.description ?? "" }}
-            /> */}
-            {/* <CourseImageForm
-              courseId={courseId}
-              defaultValues={{ imageUrl: course.imageUrl ?? "" }}
-            /> */}
+            <CourseTitleForm courseId={courseId} defaultValues={{ title: course.title }} />
+            <CourseDescriptionForm courseId={courseId} defaultValues={{ description: course.description ?? "" }} />
+            <CourseImageForm courseId={courseId} defaultValues={{ imageUrl: course.imageUrl ?? "" }} />
             {/* <CourseCategoryForm
               courseId={courseId}
               defaultValues={{ categoryId: course.categoryId ?? "" }}

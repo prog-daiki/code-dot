@@ -1,10 +1,12 @@
-import { client } from "@/lib/hono";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
+import { client } from "@/lib/hono";
 import { AdminCourse } from "@/app/api/[[...route]]/core/course/types/admin-course";
 
-export const useGetCourses = (): UseQueryResult<AdminCourse[], Error> => {
-  return useQuery<AdminCourse[], Error>({
+type ResponseType = AdminCourse[];
+
+export const useGetCourses = (): UseQueryResult<ResponseType, Error> => {
+  return useQuery<ResponseType, Error>({
     queryKey: ["courses"],
     queryFn: async () => {
       const response = await client.api.courses.$get();

@@ -7,18 +7,17 @@ import { Course } from "@/app/api/[[...route]]/core/course/types/course";
 type RequestType = Pick<Course, "title">;
 type ResponseType = Course;
 
-export const useCreateCourse = () => {
+export const useUpdateCourseTitle = (courseId: string) => {
   const queryClient = useQueryClient();
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (json) => {
-      const response = await client.api.courses.$post({
+      const response = await client.api.courses[":course_id"].title.$put({
+        param: { course_id: courseId },
         json,
       });
-
       if (!response.ok) {
-        throw new Error(`講座の作成に失敗しました: ${response.statusText}`);
+        throw new Error("講座のタイトルの更新に失敗しました");
       }
-
       const data = await response.json();
       return {
         ...data,
@@ -26,12 +25,14 @@ export const useCreateCourse = () => {
         updateDate: new Date(data.updateDate),
       };
     },
-    onSuccess: () => {
-      toast.success("講座を作成しました");
+    onSuccess: (updatedCourse) => {
+      toast.success("講座のタイトルを更新しました");
       queryClient.invalidateQueries({ queryKey: ["courses"] });
+      queryClient.invalidateQueries({ queryKey: ["course", courseId] });
+      queryClient.setQueryData(["course", courseId], updatedCourse);
     },
     onError: (error) => {
-      toast.error("講座の作成に失敗しました");
+      toast.error("講座のタイトルの更新に失敗しました");
     },
   });
   return mutation;

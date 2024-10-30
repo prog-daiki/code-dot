@@ -1,11 +1,12 @@
-import { Course } from "@/app/api/[[...route]]/core/course/types/course";
-import { client } from "@/lib/hono";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
-export const useGetCourse = (
-  courseId: string,
-): UseQueryResult<Course, Error> => {
-  return useQuery<Course, Error>({
+import { client } from "@/lib/hono";
+import { Course } from "@/app/api/[[...route]]/core/course/types/course";
+
+type ResponseType = Course;
+
+export const useGetCourse = (courseId: string): UseQueryResult<ResponseType, Error> => {
+  return useQuery<ResponseType, Error>({
     queryKey: ["course", courseId],
     queryFn: async () => {
       const response = await client.api.courses[":course_id"].$get({
@@ -17,12 +18,11 @@ export const useGetCourse = (
       }
 
       const data = await response.json();
-      const course: Course = {
+      return {
         ...data,
         createDate: new Date(data.createDate),
         updateDate: new Date(data.updateDate),
       };
-      return course;
     },
   });
 };
