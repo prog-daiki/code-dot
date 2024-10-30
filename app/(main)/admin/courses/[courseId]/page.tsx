@@ -12,6 +12,10 @@ import { CourseActions } from "@/features/course/components/admin/course-actions
 import { CourseTitleForm } from "@/features/course/components/admin/course-title-form";
 import { CourseDescriptionForm } from "@/features/course/components/admin/course-description-form";
 import { CourseImageForm } from "@/features/course/components/admin/course-image-form";
+import { CourseCategoryForm } from "@/features/course/components/admin/course-category-form";
+import { CoursePriceForm } from "@/features/course/components/admin/course-price-form";
+import { CourseSourceUrlForm } from "@/features/course/components/admin/course-source-url-form";
+import { ChapterForm } from "@/features/chapter/components/chapter-form";
 
 const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
   const { courseId } = params;
@@ -72,18 +76,9 @@ const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
             <CourseTitleForm courseId={courseId} defaultValues={{ title: course.title }} />
             <CourseDescriptionForm courseId={courseId} defaultValues={{ description: course.description ?? "" }} />
             <CourseImageForm courseId={courseId} defaultValues={{ imageUrl: course.imageUrl ?? "" }} />
-            {/* <CourseCategoryForm
-              courseId={courseId}
-              defaultValues={{ categoryId: course.categoryId ?? "" }}
-            /> */}
-            {/* <CoursePriceForm
-              courseId={courseId}
-              defaultValues={{ price: course.price ?? 0 }}
-            /> */}
-            {/* <CourseSourceUrlForm
-              courseId={courseId}
-              defaultValues={{ sourceUrl: course.sourceUrl ?? "" }}
-            /> */}
+            <CourseCategoryForm courseId={courseId} defaultValues={{ categoryId: course.categoryId ?? "" }} />
+            <CoursePriceForm courseId={courseId} defaultValues={{ price: course.price ?? 0 }} />
+            <CourseSourceUrlForm courseId={courseId} defaultValues={{ sourceUrl: course.sourceUrl ?? "" }} />
           </div>
           <div className="space-y-6">
             <div>
@@ -91,7 +86,7 @@ const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
                 <IconBadge icon={ListChecks} />
                 <h2 className="text-xl font-semibold">チャプター</h2>
               </div>
-              {/* <ChapterForm courseId={course.id} /> */}
+              <ChapterForm courseId={course.id} />
             </div>
           </div>
         </div>

@@ -32,63 +32,52 @@ const Chapter = new Hono<{
    * @throws CourseNotFoundError
    * @throws チャプター一覧取得エラー
    */
-  .get(
-    "/",
-    validateAdminMiddleware,
-    zValidator("param", z.object({ course_id: z.string() })),
-    async (c) => {
-      const { course_id: courseId } = c.req.valid("param");
-      const chapterUseCase = c.get("chapterUseCase");
-      try {
-        const chapters: Chapter[] = await chapterUseCase.getChapters(courseId);
-        return c.json(chapters);
-      } catch (error) {
-        if (error instanceof CourseNotFoundError) {
-          console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json(Messages.MSG_ERR_003(Entity.COURSE), 404);
-        }
-        return HandleError(c, error, "チャプター一覧取得エラー");
-      }
-    },
-  );
-
-/**
- * チャプター取得API
- * @route GET /api/courses/{course_id}/chapters/{chapter_id}
- * @middleware validateAdminMiddleware - 管理者権限の検証
- * @returns チャプター
- * @throws CourseNotFoundError
- * @throws ChapterNotFoundError
- * @throws チャプター取得エラー
- */
-Chapter.get(
-  "/:chapter_id",
-  validateAdminMiddleware,
-  zValidator(
-    "param",
-    z.object({ course_id: z.string(), chapter_id: z.string() }),
-  ),
-  async (c) => {
-    const { course_id: courseId, chapter_id: chapterId } = c.req.valid("param");
+  .get("/", validateAdminMiddleware, zValidator("param", z.object({ course_id: z.string() })), async (c) => {
+    const { course_id: courseId } = c.req.valid("param");
     const chapterUseCase = c.get("chapterUseCase");
     try {
-      const chapter: ChapterWithMuxData = await chapterUseCase.getChapter(
-        courseId,
-        chapterId,
-      );
-      return c.json(chapter);
+      const chapters: Chapter[] = await chapterUseCase.getChapters(courseId);
+      return c.json(chapters);
     } catch (error) {
       if (error instanceof CourseNotFoundError) {
         console.error(`存在しない講座です: ID ${courseId}`);
         return c.json(Messages.MSG_ERR_003(Entity.COURSE), 404);
-      } else if (error instanceof ChapterNotFoundError) {
-        console.error(`存在しないチャプターです: ID ${chapterId}`);
-        return c.json(Messages.MSG_ERR_003(Entity.CHAPTER), 404);
       }
-      return HandleError(c, error, "チャプター取得エラー");
+      return HandleError(c, error, "チャプター一覧取得エラー");
     }
-  },
-)
+  })
+
+  /**
+   * チャプター取得API
+   * @route GET /api/courses/{course_id}/chapters/{chapter_id}
+   * @middleware validateAdminMiddleware - 管理者権限の検証
+   * @returns チャプター
+   * @throws CourseNotFoundError
+   * @throws ChapterNotFoundError
+   * @throws チャプター取得エラー
+   */
+  .get(
+    "/:chapter_id",
+    validateAdminMiddleware,
+    zValidator("param", z.object({ course_id: z.string(), chapter_id: z.string() })),
+    async (c) => {
+      const { course_id: courseId, chapter_id: chapterId } = c.req.valid("param");
+      const chapterUseCase = c.get("chapterUseCase");
+      try {
+        const chapter: ChapterWithMuxData = await chapterUseCase.getChapter(courseId, chapterId);
+        return c.json(chapter);
+      } catch (error) {
+        if (error instanceof CourseNotFoundError) {
+          console.error(`存在しない講座です: ID ${courseId}`);
+          return c.json(Messages.MSG_ERR_003(Entity.COURSE), 404);
+        } else if (error instanceof ChapterNotFoundError) {
+          console.error(`存在しないチャプターです: ID ${chapterId}`);
+          return c.json(Messages.MSG_ERR_003(Entity.CHAPTER), 404);
+        }
+        return HandleError(c, error, "チャプター取得エラー");
+      }
+    },
+  )
 
   /**
    * チャプター登録API
@@ -108,10 +97,7 @@ Chapter.get(
       const validatedData = c.req.valid("json");
       const chapterUseCase = c.get("chapterUseCase");
       try {
-        const chapter: Chapter = await chapterUseCase.registerChapter(
-          courseId,
-          validatedData.title,
-        );
+        const chapter: Chapter = await chapterUseCase.registerChapter(courseId, validatedData.title);
         return c.json(chapter);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
@@ -135,22 +121,14 @@ Chapter.get(
   .put(
     "/:chapter_id/title",
     validateAdminMiddleware,
-    zValidator(
-      "param",
-      z.object({ chapter_id: z.string(), course_id: z.string() }),
-    ),
+    zValidator("param", z.object({ chapter_id: z.string(), course_id: z.string() })),
     zValidator("json", insertChapterSchema.pick({ title: true })),
     async (c) => {
-      const { course_id: courseId, chapter_id: chapterId } =
-        c.req.valid("param");
+      const { course_id: courseId, chapter_id: chapterId } = c.req.valid("param");
       const validatedData = c.req.valid("json");
       const chapterUseCase = c.get("chapterUseCase");
       try {
-        const chapter: Chapter = await chapterUseCase.updateChapterTitle(
-          courseId,
-          chapterId,
-          validatedData.title,
-        );
+        const chapter: Chapter = await chapterUseCase.updateChapterTitle(courseId, chapterId, validatedData.title);
         return c.json(chapter);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
@@ -178,14 +156,10 @@ Chapter.get(
   .put(
     "/:chapter_id/description",
     validateAdminMiddleware,
-    zValidator(
-      "param",
-      z.object({ chapter_id: z.string(), course_id: z.string() }),
-    ),
+    zValidator("param", z.object({ chapter_id: z.string(), course_id: z.string() })),
     zValidator("json", insertChapterSchema.pick({ description: true })),
     async (c) => {
-      const { course_id: courseId, chapter_id: chapterId } =
-        c.req.valid("param");
+      const { course_id: courseId, chapter_id: chapterId } = c.req.valid("param");
       const validatedData = c.req.valid("json");
       const chapterUseCase = c.get("chapterUseCase");
       try {
@@ -221,22 +195,14 @@ Chapter.get(
   .put(
     "/:chapter_id/video",
     validateAdminMiddleware,
-    zValidator(
-      "param",
-      z.object({ chapter_id: z.string(), course_id: z.string() }),
-    ),
+    zValidator("param", z.object({ chapter_id: z.string(), course_id: z.string() })),
     zValidator("json", insertChapterSchema.pick({ videoUrl: true })),
     async (c) => {
-      const { course_id: courseId, chapter_id: chapterId } =
-        c.req.valid("param");
+      const { course_id: courseId, chapter_id: chapterId } = c.req.valid("param");
       const validatedData = c.req.valid("json");
       const chapterUseCase = c.get("chapterUseCase");
       try {
-        const chapter: Chapter = await chapterUseCase.updateChapterVideo(
-          courseId,
-          chapterId,
-          validatedData.videoUrl,
-        );
+        const chapter: Chapter = await chapterUseCase.updateChapterVideo(courseId, chapterId, validatedData.videoUrl);
         return c.json(chapter);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
@@ -299,19 +265,12 @@ Chapter.get(
   .delete(
     "/:chapter_id",
     validateAdminMiddleware,
-    zValidator(
-      "param",
-      z.object({ chapter_id: z.string(), course_id: z.string() }),
-    ),
+    zValidator("param", z.object({ chapter_id: z.string(), course_id: z.string() })),
     async (c) => {
-      const { course_id: courseId, chapter_id: chapterId } =
-        c.req.valid("param");
+      const { course_id: courseId, chapter_id: chapterId } = c.req.valid("param");
       const chapterUseCase = c.get("chapterUseCase");
       try {
-        const chapter: Chapter = await chapterUseCase.deleteChapter(
-          courseId,
-          chapterId,
-        );
+        const chapter: Chapter = await chapterUseCase.deleteChapter(courseId, chapterId);
         return c.json(chapter);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
@@ -339,19 +298,12 @@ Chapter.get(
   .put(
     "/:chapter_id/unpublish",
     validateAdminMiddleware,
-    zValidator(
-      "param",
-      z.object({ chapter_id: z.string(), course_id: z.string() }),
-    ),
+    zValidator("param", z.object({ chapter_id: z.string(), course_id: z.string() })),
     async (c) => {
-      const { course_id: courseId, chapter_id: chapterId } =
-        c.req.valid("param");
+      const { course_id: courseId, chapter_id: chapterId } = c.req.valid("param");
       const chapterUseCase = c.get("chapterUseCase");
       try {
-        const chapter: Chapter = await chapterUseCase.unpublishChapter(
-          courseId,
-          chapterId,
-        );
+        const chapter: Chapter = await chapterUseCase.unpublishChapter(courseId, chapterId);
         return c.json(chapter);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
@@ -381,19 +333,12 @@ Chapter.get(
   .put(
     "/:chapter_id/publish",
     validateAdminMiddleware,
-    zValidator(
-      "param",
-      z.object({ chapter_id: z.string(), course_id: z.string() }),
-    ),
+    zValidator("param", z.object({ chapter_id: z.string(), course_id: z.string() })),
     async (c) => {
-      const { course_id: courseId, chapter_id: chapterId } =
-        c.req.valid("param");
+      const { course_id: courseId, chapter_id: chapterId } = c.req.valid("param");
       const chapterUseCase = c.get("chapterUseCase");
       try {
-        const chapter: Chapter = await chapterUseCase.publishChapter(
-          courseId,
-          chapterId,
-        );
+        const chapter: Chapter = await chapterUseCase.publishChapter(courseId, chapterId);
         return c.json(chapter);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
@@ -409,9 +354,7 @@ Chapter.get(
           return c.json({ error: Messages.MSG_ERR_003(Entity.MUXDATA) }, 404);
         }
         if (error instanceof ChapterRequiredFieldsEmptyError) {
-          console.error(
-            `チャプターの必須フィールドが空です: チャプターID ${chapterId}`,
-          );
+          console.error(`チャプターの必須フィールドが空です: チャプターID ${chapterId}`);
           return c.json({ error: Messages.MSG_ERR_004 }, 400);
         }
         return HandleError(c, error, "チャプター公開エラー");
