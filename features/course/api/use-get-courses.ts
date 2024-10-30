@@ -1,9 +1,9 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { InferResponseType } from "hono";
 
 import { client } from "@/lib/hono";
+import { AdminCourse } from "@/app/api/[[...route]]/core/course/types/admin-course";
 
-type ResponseType = InferResponseType<(typeof client.api.courses)["$get"]>;
+type ResponseType = AdminCourse[];
 
 export const useGetCourses = (): UseQueryResult<ResponseType, Error> => {
   return useQuery<ResponseType, Error>({
@@ -15,7 +15,16 @@ export const useGetCourses = (): UseQueryResult<ResponseType, Error> => {
         throw new Error(`講座一覧取得に失敗しました: ${response.statusText}`);
       }
 
-      return await response.json();
+      const data: any[] = await response.json();
+      const formattedData: AdminCourse[] = data.map((item) => ({
+        ...item,
+        course: {
+          ...item.course,
+          createDate: new Date(item.course.createDate),
+          updateDate: new Date(item.course.updateDate),
+        },
+      }));
+      return formattedData;
     },
   });
 };
