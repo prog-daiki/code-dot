@@ -5,6 +5,7 @@ import { clerkMiddleware } from "@hono/clerk-auth";
 
 import Category from "./core/category";
 import Course from "./core/course";
+import Chapter from "./core/chapter";
 
 export const runtime = "nodejs";
 
@@ -19,7 +20,10 @@ app.use(
   logger(),
 );
 
-const routes = app.route("/categories", Category).route("/courses", Course);
+const routes = app
+  .route("/categories", Category)
+  .route("/courses", Course)
+  .route("/courses/:course_id/chapters", Chapter);
 
 export const GET = handle(app);
 export const POST = handle(app);
