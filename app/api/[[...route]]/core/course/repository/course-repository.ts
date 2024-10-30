@@ -268,4 +268,26 @@ export class CourseRepository {
       .returning();
     return data;
   }
+
+  /**
+   * 講座を更新する
+   * @param courseId 講座ID
+   * @param updateData 更新するデータ
+   * @returns 更新された講座
+   */
+  async updateCourse(
+    courseId: string,
+    updateData: Partial<Omit<typeof course.$inferInsert, "id" | "createDate">>,
+  ) {
+    const currentJstDate: Date = getCurrentJstDate();
+    const [data]: Course[] = await db
+      .update(course)
+      .set({
+        ...updateData,
+        updateDate: currentJstDate,
+      })
+      .where(eq(course.id, courseId))
+      .returning();
+    return data;
+  }
 }
