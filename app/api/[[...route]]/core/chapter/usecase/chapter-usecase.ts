@@ -1,8 +1,10 @@
+import { ChapterNotFoundError } from "../../../error/chapter-not-found-error";
 import { CourseNotFoundError } from "../../../error/course-not-found-error";
 import { CourseRepository } from "../../course/repository/course-repository";
 import { MuxDataRepository } from "../../muxdata/repository/muxdata-repository";
 import { ChapterRepository } from "../repository/chapter-repository";
 import { Chapter } from "../types/chapter";
+import { ChapterWithMuxData } from "../types/chapter-with-muxdata";
 
 /**
  * チャプターに関するユースケースを管理するクラス
@@ -32,5 +34,33 @@ export class ChapterUseCase {
       throw new CourseNotFoundError();
     }
     return await this.chapterRepository.getChapters(courseId);
+  }
+
+  /**
+   * チャプターを取得する
+   * @param courseId 講座ID
+   * @param chapterId チャプターID
+   * @returns チャプター
+   */
+  async getChapter(
+    courseId: string,
+    chapterId: string,
+  ): Promise<ChapterWithMuxData> {
+    // 講座の存在チェック
+    const isCourseExists: boolean = await this.courseRepository.isCourseExists(
+      courseId,
+    );
+    if (!isCourseExists) {
+      throw new CourseNotFoundError();
+    }
+
+    // チャプターの存在チェック
+    const isChapterExists: boolean =
+      await this.chapterRepository.isChapterExists(chapterId);
+    if (!isChapterExists) {
+      throw new ChapterNotFoundError();
+    }
+
+    return await this.chapterRepository.getChapterById(chapterId);
   }
 }

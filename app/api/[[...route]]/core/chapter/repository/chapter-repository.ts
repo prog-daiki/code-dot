@@ -2,7 +2,8 @@ import { and, asc, eq } from "drizzle-orm";
 
 import { db } from "@/db/drizzle";
 import { Chapter } from "../types/chapter";
-import { chapter } from "@/db/schema";
+import { chapter, muxData } from "@/db/schema";
+import { ChapterWithMuxData } from "../types/chapter-with-muxdata";
 
 /**
  * チャプターのリポジトリを管理するクラス
@@ -34,5 +35,31 @@ export class ChapterRepository {
       .where(and(eq(chapter.courseId, courseId), eq(chapter.publishFlag, true)))
       .orderBy(asc(chapter.position));
     return chapters;
+  }
+
+  /**
+   * チャプターの存在チェック
+   * @param chapterId チャプターID
+   * @returns {Promise<boolean>} チャプターが存在する場合はtrue、そうでない場合はfalse
+   */
+  async isChapterExists(chapterId: string): Promise<boolean> {
+    const chapter: ChapterWithMuxData | null = await this.getChapterById(
+      chapterId,
+    );
+    return !!chapter;
+  }
+
+  /**
+   * チャプターを取得する
+   * @param chapterId チャプターID
+   * @returns チャプター
+   */
+  async getChapterById(chapterId: string): Promise<ChapterWithMuxData> {
+    const [data]: ChapterWithMuxData[] = await db
+      .select()
+      .from(chapter)
+      .leftJoin(muxData, eq(chapter.id, muxData.chapterId))
+      .where(eq(chapter.id, chapterId));
+    return data;
   }
 }
