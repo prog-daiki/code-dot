@@ -1,8 +1,9 @@
 import { Hono } from "hono";
-import { validateAuthMiddleware } from "../../auth/validate-auth-middleware";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { getAuth } from "@hono/clerk-auth";
+
+import { validateAuthMiddleware } from "../../auth/validate-auth-middleware";
 import { PublishCourse } from "./types/publish-course";
 import { HandleError } from "../../error/handle-error";
 import { CourseUseCase } from "./usecase/course-usecase";
