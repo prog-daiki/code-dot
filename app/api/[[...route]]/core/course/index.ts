@@ -6,6 +6,8 @@ import { getAuth } from "@hono/clerk-auth";
 import { PublishCourse } from "./types/publish-course";
 import { HandleError } from "../../error/handle-error";
 import { CourseUseCase } from "./usecase/course-usecase";
+import { validateAdminMiddleware } from "../../auth/validate-admin-middleware";
+import { AdminCourse } from "./types/admin-course";
 
 const Course = new Hono<{
   Variables: {
@@ -15,6 +17,24 @@ const Course = new Hono<{
   .use("*", async (c, next) => {
     c.set("courseUseCase", new CourseUseCase());
     await next();
+  })
+
+  /**
+   * 講座一覧取得API
+   * @route GET /api/courses
+   * @middleware validateAdminMiddleware - 管理者権限の検証
+   * @returns 講座一覧
+   * @throws 講座一覧取得エラー
+   */
+  .get("/", validateAdminMiddleware, async (c) => {
+    const courseUseCase = c.get("courseUseCase");
+    try {
+      const courses: AdminCourse[] = await courseUseCase.getCourses();
+      console.log(`講座一覧を取得しました: ${courses.length}件`);
+      return c.json(courses);
+    } catch (error) {
+      return HandleError(c, error, "講座一覧取得エラーが発生しました。");
+    }
   })
 
   /**
