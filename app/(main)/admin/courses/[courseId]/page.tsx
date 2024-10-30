@@ -14,6 +14,7 @@ import { CourseDescriptionForm } from "@/features/course/components/admin/course
 import { CourseImageForm } from "@/features/course/components/admin/course-image-form";
 import { CourseCategoryForm } from "@/features/course/components/admin/course-category-form";
 import { CoursePriceForm } from "@/features/course/components/admin/course-price-form";
+import { CourseSourceUrlForm } from "@/features/course/components/admin/course-source-url-form";
 
 const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
   const { courseId } = params;
@@ -76,10 +77,7 @@ const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
             <CourseImageForm courseId={courseId} defaultValues={{ imageUrl: course.imageUrl ?? "" }} />
             <CourseCategoryForm courseId={courseId} defaultValues={{ categoryId: course.categoryId ?? "" }} />
             <CoursePriceForm courseId={courseId} defaultValues={{ price: course.price ?? 0 }} />
-            {/* <CourseSourceUrlForm
-              courseId={courseId}
-              defaultValues={{ sourceUrl: course.sourceUrl ?? "" }}
-            /> */}
+            <CourseSourceUrlForm courseId={courseId} defaultValues={{ sourceUrl: course.sourceUrl ?? "" }} />
           </div>
           <div className="space-y-6">
             <div>
