@@ -1,3 +1,5 @@
+import Mux from "@mux/mux-node";
+
 import { ChapterNotFoundError } from "../../../error/chapter-not-found-error";
 import { CourseNotFoundError } from "../../../error/course-not-found-error";
 import { CourseRepository } from "../../course/repository/course-repository";
@@ -5,6 +7,7 @@ import { MuxDataRepository } from "../../muxdata/repository/muxdata-repository";
 import { ChapterRepository } from "../repository/chapter-repository";
 import { Chapter } from "../types/chapter";
 import { ChapterWithMuxData } from "../types/chapter-with-muxdata";
+import { MuxData } from "../../muxdata/types/muxdata";
 
 /**
  * チャプターに関するユースケースを管理するクラス
@@ -141,5 +144,60 @@ export class ChapterUseCase {
     return await this.chapterRepository.updateChapter(chapterId, {
       description,
     });
+  }
+
+  /**
+   * チャプターの動画を更新する
+   * @param courseId 講座ID
+   * @param chapterId チャプターID
+   * @param videoUrl チャプター動画URL
+   * @returns 更新したチャプター
+   */
+  async updateChapterVideo(
+    courseId: string,
+    chapterId: string,
+    videoUrl: string,
+  ): Promise<Chapter> {
+    // 講座の存在チェック
+    const isCourseExists: boolean = await this.courseRepository.isCourseExists(
+      courseId,
+    );
+    if (!isCourseExists) {
+      throw new CourseNotFoundError();
+    }
+
+    // チャプターの存在チェック
+    const isChapterExists: boolean =
+      await this.chapterRepository.isChapterExists(chapterId);
+    if (!isChapterExists) {
+      throw new ChapterNotFoundError();
+    }
+
+    const { video }: Mux = new Mux({
+      tokenId: process.env.MUX_TOKEN_ID!,
+      tokenSecret: process.env.MUX_TOKEN_SECRET!,
+    });
+
+    // MuxDataの存在チェック
+    const existsMuxData: MuxData | null =
+      await this.muxDataRepository.checkMuxDataExists(chapterId);
+    if (existsMuxData) {
+      await video.assets.delete(existsMuxData.assetId);
+      await this.muxDataRepository.deleteMuxData(chapterId);
+    }
+
+    // MuxDataを登録する
+    const asset = await video.assets.create({
+      input: videoUrl as any,
+      playback_policy: ["public"],
+      test: false,
+    });
+    await this.muxDataRepository.registerMuxData(
+      chapterId,
+      asset.id,
+      asset.playback_ids![0].id,
+    );
+
+    return await this.chapterRepository.updateChapter(chapterId, { videoUrl });
   }
 }
