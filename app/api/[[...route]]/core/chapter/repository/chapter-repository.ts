@@ -9,6 +9,20 @@ import { chapter } from "@/db/schema";
  */
 export class ChapterRepository {
   /**
+   * 講座に紐づくチャプター一覧を取得する
+   * @param courseId 講座ID
+   * @returns チャプター一覧
+   */
+  async getChapters(courseId: string): Promise<Chapter[]> {
+    const data: Chapter[] = await db
+      .select()
+      .from(chapter)
+      .where(eq(chapter.courseId, courseId))
+      .orderBy(asc(chapter.position));
+    return data;
+  }
+
+  /**
    * 講座に紐づくチャプター(公開済み)を一覧取得する
    * @param courseId
    * @returns
