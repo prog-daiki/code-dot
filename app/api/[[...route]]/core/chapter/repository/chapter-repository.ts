@@ -108,4 +108,16 @@ export class ChapterRepository {
       .returning();
     return data;
   }
+
+  /**
+   * チャプターを削除する
+   * @param chapterId チャプターID
+   */
+  async deleteChapter(chapterId: string): Promise<Chapter> {
+    const [data]: Chapter[] = await db
+      .delete(chapter)
+      .where(eq(chapter.id, chapterId))
+      .returning();
+    return data;
+  }
 }
