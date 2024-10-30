@@ -9,6 +9,7 @@ import { Banner } from "@/app/_components/common/banner";
 import { useGetChapters } from "@/features/chapter/api/use-get-chapters";
 import { IconBadge } from "@/app/_components/common/icon-badge";
 import { CourseActions } from "@/features/course/components/admin/course-actions";
+import { CourseTitleForm } from "@/features/course/components/admin/course-title-form";
 
 const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
   const { courseId } = params;
@@ -77,14 +78,14 @@ const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
               <IconBadge icon={LayoutDashboard} />
               <h2 className="text-xl font-semibold">講座のカスタマイズ</h2>
             </div>
-            {/* <CourseTitleForm
+            <CourseTitleForm
               courseId={courseId}
               defaultValues={{ title: course.title }}
-            /> */}
-            {/* <CourseDescriptionForm
+            />
+            <CourseDescriptionForm
               courseId={courseId}
               defaultValues={{ description: course.description ?? "" }}
-            /> */}
+            />
             {/* <CourseImageForm
               courseId={courseId}
               defaultValues={{ imageUrl: course.imageUrl ?? "" }}
