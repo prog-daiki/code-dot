@@ -12,6 +12,7 @@ import { PurchaseCourse } from "./types/purchase-course";
 import type { Course } from "./types/course";
 import { Entity, Messages } from "../../common/message";
 import { CourseNotFoundError } from "../../error/course-not-found-error";
+import { PublishCourseWithMuxData } from "./types/publish-course-with-muxdata";
 
 const Course = new Hono<{
   Variables: {
@@ -119,6 +120,36 @@ const Course = new Hono<{
           return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
         }
         return HandleError(c, error, "講座取得エラー");
+      }
+    },
+  )
+
+  /**
+   * 公開講座取得API
+   * @route GET /api/courses/:course_id
+   * @middleware validateAuthMiddleware - ユーザー権限の検証
+   * @returns 公開講座
+   * @throws CourseNotFoundError
+   * @throws 公開講座取得エラー
+   */
+  .get(
+    "/:course_id/publish",
+    validateAuthMiddleware,
+    zValidator("param", z.object({ course_id: z.string() })),
+    async (c) => {
+      const { course_id: courseId } = c.req.valid("param");
+      const courseUseCase = c.get("courseUseCase");
+      const auth = getAuth(c);
+      try {
+        const course: PublishCourseWithMuxData =
+          await courseUseCase.getPublishCourse(courseId, auth!.userId!);
+        return c.json(course);
+      } catch (error) {
+        if (error instanceof CourseNotFoundError) {
+          console.error(`存在しない講座です: ID ${courseId}`);
+          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+        }
+        return HandleError(c, error, "公開講座取得エラー");
       }
     },
   );

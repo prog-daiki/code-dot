@@ -1,10 +1,11 @@
 import { db } from "@/db/drizzle";
 import { PublishCourse } from "../types/publish-course";
-import { category, chapter, course, purchase } from "@/db/schema";
+import { category, chapter, course, muxData, purchase } from "@/db/schema";
 import { and, desc, eq, ilike, sql } from "drizzle-orm";
 import { AdminCourse } from "../types/admin-course";
 import { PurchaseCourse } from "../types/purchase-course";
 import { Course } from "../types/course";
+import { PublishCourseWithMuxData } from "../types/publish-course-with-muxdata";
 
 /**
  * 講座のリポジトリを管理するクラス
@@ -167,6 +168,83 @@ export class CourseRepository {
       .select()
       .from(course)
       .where(eq(course.id, courseId));
+    return data;
+  }
+
+  /**
+   * 講座の存在チェック
+   * @param courseId 講座ID
+   * @returns {Promise<boolean>} 講座が存在する場合はtrue、そうでない場合はfalse
+   */
+  async isCourseExists(courseId: string): Promise<boolean> {
+    const course = await this.getCourseById(courseId);
+    return !!course;
+  }
+
+  /**
+   * 公開講座を取得する
+   * @param courseId
+   * @returns
+   */
+  async getPublishCourse(
+    courseId: string,
+    userId?: string,
+  ): Promise<PublishCourseWithMuxData> {
+    const [data]: PublishCourseWithMuxData[] = await db
+      .select({
+        course,
+        category,
+        chapters: sql<
+          (typeof chapter.$inferSelect & {
+            muxData: typeof muxData.$inferSelect | null;
+          })[]
+        >`json_agg(
+            json_build_object(
+              'id', ${chapter.id},
+              'title', ${chapter.title},
+              'description', ${chapter.description},
+              'videoUrl', ${chapter.videoUrl},
+              'position', ${chapter.position},
+              'publishFlag', ${chapter.publishFlag},
+              'courseId', ${chapter.courseId},
+              'createDate', ${chapter.createDate},
+              'updateDate', ${chapter.updateDate},
+              'muxData', case when ${muxData.id} is not null then
+                json_build_object(
+                  'id', ${muxData.id},
+                  'assetId', ${muxData.assetId},
+                  'playbackId', ${muxData.playbackId},
+                  'chapterId', ${muxData.chapterId}
+                )
+              else null end
+            )
+            ORDER BY ${chapter.position} ASC
+          ) filter (where ${chapter.id} is not null)
+        `.as("chapters"),
+        purchased:
+          sql<boolean>`case when ${purchase.id} is not null then true else false end`.as(
+            "purchased",
+          ),
+      })
+      .from(course)
+      .leftJoin(chapter, eq(course.id, chapter.courseId))
+      .leftJoin(category, eq(course.categoryId, category.id))
+      .leftJoin(muxData, eq(chapter.id, muxData.chapterId))
+      .leftJoin(
+        purchase,
+        and(
+          eq(course.id, purchase.courseId),
+          userId ? eq(purchase.userId, userId) : undefined,
+        ),
+      )
+      .where(
+        and(
+          eq(course.id, courseId),
+          eq(course.publishFlag, true),
+          eq(chapter.publishFlag, true),
+        ),
+      )
+      .groupBy(course.id, category.id, purchase.id);
     return data;
   }
 }

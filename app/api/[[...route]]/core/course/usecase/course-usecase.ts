@@ -4,6 +4,7 @@ import { CourseRepository } from "../repository/course-repository";
 import { AdminCourse } from "../types/admin-course";
 import { Course } from "../types/course";
 import { PublishCourse } from "../types/publish-course";
+import { PublishCourseWithMuxData } from "../types/publish-course-with-muxdata";
 import { PurchaseCourse } from "../types/purchase-course";
 
 /**
@@ -77,5 +78,25 @@ export class CourseUseCase {
     }
 
     return course;
+  }
+
+  /**
+   * 公開講座を取得する
+   * @param courseId 講座ID
+   * @returns 公開講座
+   */
+  async getPublishCourse(
+    courseId: string,
+    userId?: string,
+  ): Promise<PublishCourseWithMuxData> {
+    // 講座の存在チェック
+    const isCourseExists: boolean = await this.courseRepository.isCourseExists(
+      courseId,
+    );
+    if (!isCourseExists) {
+      throw new CourseNotFoundError();
+    }
+
+    return await this.courseRepository.getPublishCourse(courseId, userId);
   }
 }
