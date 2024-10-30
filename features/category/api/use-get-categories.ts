@@ -1,9 +1,9 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { InferResponseType } from "hono";
 
 import { client } from "@/lib/hono";
+import { Category } from "@/app/api/[[...route]]/core/category/types/category";
 
-type ResponseType = InferResponseType<(typeof client.api.categories)["$get"]>;
+type ResponseType = Category[];
 
 export const useGetCategories = (): UseQueryResult<ResponseType, Error> => {
   return useQuery<ResponseType, Error>({
@@ -12,12 +12,11 @@ export const useGetCategories = (): UseQueryResult<ResponseType, Error> => {
       const response = await client.api.categories.$get();
 
       if (!response.ok) {
-        throw new Error(
-          `カテゴリーの一覧取得に失敗しました: ${response.statusText}`,
-        );
+        throw new Error(`カテゴリーの一覧取得に失敗しました: ${response.statusText}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      return data;
     },
   });
 };
