@@ -8,6 +8,7 @@ import { HandleError } from "../../error/handle-error";
 import { CourseUseCase } from "./usecase/course-usecase";
 import { validateAdminMiddleware } from "../../auth/validate-admin-middleware";
 import { AdminCourse } from "./types/admin-course";
+import { PurchaseCourse } from "./types/purchase-course";
 
 const Course = new Hono<{
   Variables: {
@@ -69,6 +70,26 @@ const Course = new Hono<{
         return HandleError(c, error, "公開講座一覧取得エラー");
       }
     },
-  );
+  )
+
+  /**
+   * 購入済み講座一覧取得API
+   * @route GET /api/courses/purchased
+   * @middleware validateAuthMiddleware - ユーザー権限の検証
+   * @returns 購入済み講座一覧
+   * @throws 購入済み講座一覧取得エラー
+   */
+  .get("/purchased", validateAuthMiddleware, async (c) => {
+    const auth = getAuth(c);
+    const courseUseCase = c.get("courseUseCase");
+    try {
+      const courses: PurchaseCourse[] = await courseUseCase.getPurchaseCourses(
+        auth!.userId!,
+      );
+      return c.json(courses);
+    } catch (error) {
+      return HandleError(c, error, "購入済み講座一覧取得エラー");
+    }
+  });
 
 export default Course;

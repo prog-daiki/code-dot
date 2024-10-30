@@ -2,6 +2,7 @@ import { CategoryRepository } from "../../category/repository/category-repositor
 import { CourseRepository } from "../repository/course-repository";
 import { AdminCourse } from "../types/admin-course";
 import { PublishCourse } from "../types/publish-course";
+import { PurchaseCourse } from "../types/purchase-course";
 
 /**
  * 講座に関するユースケースを管理するクラス
@@ -48,5 +49,16 @@ export class CourseUseCase {
       title,
       categoryId,
     );
+  }
+
+  /**
+   * 購入済み講座一覧を取得する
+   * @param userId ユーザーID
+   * @returns 購入済み講座一覧
+   */
+  async getPurchaseCourses(userId: string): Promise<PurchaseCourse[]> {
+    const courses: PurchaseCourse[] =
+      await this.courseRepository.getPurchaseCourses(userId);
+    return courses;
   }
 }
