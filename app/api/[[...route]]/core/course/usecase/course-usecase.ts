@@ -14,6 +14,9 @@ import { PublishCourseWithMuxData } from "../types/publish-course-with-muxdata";
 import { PurchaseCourse } from "../types/purchase-course";
 import { MuxData } from "../../muxdata/types/muxdata";
 import { MuxDataRepository } from "../../muxdata/repository/muxdata-repository";
+import { CourseNotFreeError } from "../../../error/course-not-free-error";
+import { PurchaseAlreadyExistsError } from "../../../error/purchase-already-exists-error";
+import { PurchaseRepository } from "../../purchase/repository/purchase-repository";
 
 /**
  * 講座に関するユースケースを管理するクラス
@@ -23,16 +26,14 @@ export class CourseUseCase {
   private categoryRepository: CategoryRepository;
   private chapterRepository: ChapterRepository;
   private muxDataRepository: MuxDataRepository;
-  // private purchaseRepository: PurchaseRepository;
-  // private stripeCustomerRepository: StripeCustomerRepository;
+  private purchaseRepository: PurchaseRepository;
 
   constructor() {
     this.courseRepository = new CourseRepository();
     this.categoryRepository = new CategoryRepository();
     this.chapterRepository = new ChapterRepository();
     this.muxDataRepository = new MuxDataRepository();
-    // this.purchaseRepository = new PurchaseRepository();
-    // this.stripeCustomerRepository = new StripeCustomerRepository();
+    this.purchaseRepository = new PurchaseRepository();
   }
 
   /**
@@ -331,5 +332,34 @@ export class CourseUseCase {
     }
 
     return await this.courseRepository.deleteCourse(courseId);
+  }
+
+  /**
+   * 無料講座を購入する
+   * @param courseId 講座ID
+   * @param userId ユーザーID
+   */
+  async checkoutFreeCourse(courseId: string, userId: string): Promise<void> {
+    // 講座存在チェック
+    const existsCourse = await this.courseRepository.getCourseById(courseId);
+    if (!existsCourse) {
+      throw new CourseNotFoundError();
+    }
+
+    // 講座が無料かチェック
+    if (existsCourse.price !== 0) {
+      throw new CourseNotFreeError();
+    }
+
+    // 講座をすでに購入しているかチェック
+    const existsPurchase = await this.purchaseRepository.existsPurchase(
+      courseId,
+      userId,
+    );
+    if (existsPurchase) {
+      throw new PurchaseAlreadyExistsError();
+    }
+
+    await this.purchaseRepository.registerPurchase(courseId, userId);
   }
 }
