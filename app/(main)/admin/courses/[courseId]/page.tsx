@@ -11,6 +11,7 @@ import { IconBadge } from "@/app/_components/common/icon-badge";
 import { CourseActions } from "@/features/course/components/admin/course-actions";
 import { CourseTitleForm } from "@/features/course/components/admin/course-title-form";
 import { CourseDescriptionForm } from "@/features/course/components/admin/course-description-form";
+import { CourseImageForm } from "@/features/course/components/admin/course-image-form";
 
 const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
   const { courseId } = params;
@@ -70,10 +71,7 @@ const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
             </div>
             <CourseTitleForm courseId={courseId} defaultValues={{ title: course.title }} />
             <CourseDescriptionForm courseId={courseId} defaultValues={{ description: course.description ?? "" }} />
-            {/* <CourseImageForm
-              courseId={courseId}
-              defaultValues={{ imageUrl: course.imageUrl ?? "" }}
-            /> */}
+            <CourseImageForm courseId={courseId} defaultValues={{ imageUrl: course.imageUrl ?? "" }} />
             {/* <CourseCategoryForm
               courseId={courseId}
               defaultValues={{ categoryId: course.categoryId ?? "" }}
