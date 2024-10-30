@@ -1,10 +1,12 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { InferResponseType } from "hono";
 
 import { client } from "@/lib/hono";
-import { Category } from "@/app/api/[[...route]]/core/category/types/category";
 
-export const useGetCategories = (): UseQueryResult<Category[], Error> => {
-  return useQuery<Category[], Error>({
+type ResponseType = InferResponseType<(typeof client.api.categories)["$get"]>;
+
+export const useGetCategories = (): UseQueryResult<ResponseType, Error> => {
+  return useQuery<ResponseType, Error>({
     queryKey: ["categories"],
     queryFn: async () => {
       const response = await client.api.categories.$get();
@@ -15,8 +17,7 @@ export const useGetCategories = (): UseQueryResult<Category[], Error> => {
         );
       }
 
-      const data: Category[] = await response.json();
-      return data;
+      return await response.json();
     },
   });
 };
