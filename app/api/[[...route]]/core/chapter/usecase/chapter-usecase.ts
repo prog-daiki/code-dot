@@ -8,6 +8,8 @@ import { ChapterRepository } from "../repository/chapter-repository";
 import { Chapter } from "../types/chapter";
 import { ChapterWithMuxData } from "../types/chapter-with-muxdata";
 import { MuxData } from "../../muxdata/types/muxdata";
+import { MuxDataNotFoundError } from "../../../error/muxdata-not-found-error";
+import { ChapterRequiredFieldsEmptyError } from "../../../error/chapter-required-field-empty-error";
 
 /**
  * チャプターに関するユースケースを管理するクラス
@@ -317,5 +319,49 @@ export class ChapterUseCase {
       });
     }
     return chapter;
+  }
+
+  /**
+   * 講座のチャプターを公開する
+   * @param courseId 講座ID
+   * @param chapterId チャプターID
+   */
+  async publishChapter(courseId: string, chapterId: string): Promise<Chapter> {
+    // 講座の存在チェック
+    const isCourseExists: boolean = await this.courseRepository.isCourseExists(
+      courseId,
+    );
+    if (!isCourseExists) {
+      throw new CourseNotFoundError();
+    }
+
+    // チャプターの存在チェック
+    const isChapterExists: boolean =
+      await this.chapterRepository.isChapterExists(chapterId);
+    if (!isChapterExists) {
+      throw new ChapterNotFoundError();
+    }
+
+    // MuxDataの存在チェック
+    const existsMuxData: MuxData | null =
+      await this.muxDataRepository.checkMuxDataExists(chapterId);
+    if (!existsMuxData) {
+      throw new MuxDataNotFoundError();
+    }
+
+    // チャプターの必須フィールドが空かどうかを確認
+    const data: ChapterWithMuxData =
+      await this.chapterRepository.getChapterById(chapterId);
+    if (
+      !data.chapter.title ||
+      !data.chapter.description ||
+      !data.chapter.videoUrl
+    ) {
+      throw new ChapterRequiredFieldsEmptyError();
+    }
+
+    return await this.chapterRepository.updateChapter(chapterId, {
+      publishFlag: true,
+    });
   }
 }
