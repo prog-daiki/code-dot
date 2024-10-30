@@ -1,12 +1,11 @@
+import { Course } from "@/app/api/[[...route]]/core/course/types/course";
 import { client } from "@/lib/hono";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { InferResponseType } from "hono";
 
 import { toast } from "sonner";
 
-type ResponseType = InferResponseType<
-  (typeof client.api.courses)[":course_id"]["$delete"]
->;
+type ResponseType = Course;
 
 export const useDeleteCourse = (courseId: string) => {
   const queryClient = useQueryClient();
@@ -15,7 +14,17 @@ export const useDeleteCourse = (courseId: string) => {
       const response = await client.api.courses[":course_id"].$delete({
         param: { course_id: courseId },
       });
-      return response.json();
+
+      if (!response.ok) {
+        throw new Error(`講座の削除に失敗しました: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return {
+        ...data,
+        createDate: new Date(data.createDate),
+        updateDate: new Date(data.updateDate),
+      };
     },
     onSuccess: () => {
       toast.success("講座を削除しました");
