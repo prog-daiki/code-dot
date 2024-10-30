@@ -1,3 +1,5 @@
+import { Mux } from "@mux/mux-node";
+
 import { CategoryNotFoundError } from "../../../error/category-not-found-error";
 import { CourseNotFoundError } from "../../../error/course-not-found-error";
 import { CourseRequiredFieldsEmptyError } from "../../../error/course-required-field-empty-error";
@@ -10,6 +12,8 @@ import { Course } from "../types/course";
 import { PublishCourse } from "../types/publish-course";
 import { PublishCourseWithMuxData } from "../types/publish-course-with-muxdata";
 import { PurchaseCourse } from "../types/purchase-course";
+import { MuxData } from "../../muxdata/types/muxdata";
+import { MuxDataRepository } from "../../muxdata/repository/muxdata-repository";
 
 /**
  * 講座に関するユースケースを管理するクラス
@@ -18,7 +22,7 @@ export class CourseUseCase {
   private courseRepository: CourseRepository;
   private categoryRepository: CategoryRepository;
   private chapterRepository: ChapterRepository;
-  // private muxDataRepository: MuxDataRepository;
+  private muxDataRepository: MuxDataRepository;
   // private purchaseRepository: PurchaseRepository;
   // private stripeCustomerRepository: StripeCustomerRepository;
 
@@ -26,7 +30,7 @@ export class CourseUseCase {
     this.courseRepository = new CourseRepository();
     this.categoryRepository = new CategoryRepository();
     this.chapterRepository = new ChapterRepository();
-    // this.muxDataRepository = new MuxDataRepository();
+    this.muxDataRepository = new MuxDataRepository();
     // this.purchaseRepository = new PurchaseRepository();
     // this.stripeCustomerRepository = new StripeCustomerRepository();
   }
@@ -297,5 +301,35 @@ export class CourseUseCase {
       },
     );
     return updatedCourse;
+  }
+
+  /**
+   * 講座を削除する
+   * @param courseId 講座ID
+   * @returns 削除された講座
+   */
+  async deleteCourse(courseId: string): Promise<Course> {
+    // 講座の存在チェック
+    const isCourseExists: boolean = await this.courseRepository.isCourseExists(
+      courseId,
+    );
+    if (!isCourseExists) {
+      throw new CourseNotFoundError();
+    }
+
+    // Muxの講座に関連するデータを削除する
+    const { video }: Mux = new Mux({
+      tokenId: process.env.MUX_TOKEN_ID!,
+      tokenSecret: process.env.MUX_TOKEN_SECRET!,
+    });
+    const muxDataList: MuxData[] =
+      await this.muxDataRepository.getMuxDataByCourseId(courseId);
+    if (muxDataList.length > 0) {
+      for (const muxData of muxDataList) {
+        await video.assets.delete(muxData.assetId);
+      }
+    }
+
+    return await this.courseRepository.deleteCourse(courseId);
   }
 }

@@ -444,6 +444,34 @@ const Course = new Hono<{
         return HandleError(c, error, "講座公開エラー");
       }
     },
+  )
+
+  /**
+   * 講座削除API
+   * @route DELETE /api/courses/:course_id
+   * @middleware validateAdminMiddleware - 管理者権限の検証
+   * @returns 削除した講座
+   * @throws CourseNotFoundError
+   * @throws 講座削除エラー
+   */
+  .delete(
+    "/:course_id",
+    validateAdminMiddleware,
+    zValidator("param", z.object({ course_id: z.string() })),
+    async (c) => {
+      const { course_id: courseId } = c.req.valid("param");
+      const courseUseCase = c.get("courseUseCase");
+      try {
+        const course: Course = await courseUseCase.deleteCourse(courseId);
+        return c.json(course);
+      } catch (error) {
+        if (error instanceof CourseNotFoundError) {
+          console.error(`存在しない講座です: ID ${courseId}`);
+          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+        }
+        return HandleError(c, error, "講座公開エラー");
+      }
+    },
   );
 
 export default Course;

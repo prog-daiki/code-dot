@@ -291,4 +291,17 @@ export class CourseRepository {
       .returning();
     return data;
   }
+
+  /**
+   * 講座を物理削除する
+   * @param courseId
+   * @returns
+   */
+  async deleteCourse(courseId: string): Promise<Course> {
+    const [data] = await db
+      .delete(course)
+      .where(eq(course.id, courseId))
+      .returning();
+    return data;
+  }
 }
