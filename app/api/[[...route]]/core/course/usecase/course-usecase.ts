@@ -1,6 +1,8 @@
+import { CourseNotFoundError } from "../../../error/course-not-found-error";
 import { CategoryRepository } from "../../category/repository/category-repository";
 import { CourseRepository } from "../repository/course-repository";
 import { AdminCourse } from "../types/admin-course";
+import { Course } from "../types/course";
 import { PublishCourse } from "../types/publish-course";
 import { PurchaseCourse } from "../types/purchase-course";
 
@@ -60,5 +62,20 @@ export class CourseUseCase {
     const courses: PurchaseCourse[] =
       await this.courseRepository.getPurchaseCourses(userId);
     return courses;
+  }
+
+  /**
+   * 講座を取得する
+   * @param courseId 講座ID
+   * @returns 講座
+   */
+  async getCourse(courseId: string): Promise<Course> {
+    // 講座の存在チェック
+    const course: Course = await this.courseRepository.getCourseById(courseId);
+    if (!course) {
+      throw new CourseNotFoundError();
+    }
+
+    return course;
   }
 }

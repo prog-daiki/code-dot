@@ -4,6 +4,7 @@ import { category, chapter, course, purchase } from "@/db/schema";
 import { and, desc, eq, ilike, sql } from "drizzle-orm";
 import { AdminCourse } from "../types/admin-course";
 import { PurchaseCourse } from "../types/purchase-course";
+import { Course } from "../types/course";
 
 /**
  * 講座のリポジトリを管理するクラス
@@ -153,6 +154,19 @@ export class CourseRepository {
       .where(and(eq(course.publishFlag, true), eq(chapter.publishFlag, true)))
       .groupBy(course.id, category.id, purchase.id)
       .orderBy(desc(course.createDate));
+    return data;
+  }
+
+  /**
+   * 指定されたIDの講座を取得する
+   * @param courseId 講座ID
+   * @returns {Promise<Course | null>} 講座
+   */
+  async getCourseById(courseId: string): Promise<Course> {
+    const [data]: Course[] = await db
+      .select()
+      .from(course)
+      .where(eq(course.id, courseId));
     return data;
   }
 }

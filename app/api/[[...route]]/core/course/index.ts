@@ -9,6 +9,9 @@ import { CourseUseCase } from "./usecase/course-usecase";
 import { validateAdminMiddleware } from "../../auth/validate-admin-middleware";
 import { AdminCourse } from "./types/admin-course";
 import { PurchaseCourse } from "./types/purchase-course";
+import type { Course } from "./types/course";
+import { Entity, Messages } from "../../common/message";
+import { CourseNotFoundError } from "../../error/course-not-found-error";
 
 const Course = new Hono<{
   Variables: {
@@ -90,6 +93,34 @@ const Course = new Hono<{
     } catch (error) {
       return HandleError(c, error, "購入済み講座一覧取得エラー");
     }
-  });
+  })
+
+  /**
+   * 講座取得API
+   * @route GET /api/courses/:course_id
+   * @middleware validateAdminMiddleware - 管理者権限の検証
+   * @returns 講座
+   * @throws CourseNotFoundError
+   * @throws 講座取得エラー
+   */
+  .get(
+    "/:course_id",
+    validateAdminMiddleware,
+    zValidator("param", z.object({ course_id: z.string() })),
+    async (c) => {
+      const { course_id: courseId } = c.req.valid("param");
+      const courseUseCase = c.get("courseUseCase");
+      try {
+        const course: Course = await courseUseCase.getCourse(courseId);
+        return c.json(course);
+      } catch (error) {
+        if (error instanceof CourseNotFoundError) {
+          console.error(`存在しない講座です: ID ${courseId}`);
+          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+        }
+        return HandleError(c, error, "講座取得エラー");
+      }
+    },
+  );
 
 export default Course;
