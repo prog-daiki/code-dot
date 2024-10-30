@@ -10,6 +10,7 @@ import { HandleError } from "../../error/handle-error";
 import { ChapterUseCase } from "./usecase/chapter-usecase";
 import { ChapterWithMuxData } from "./types/chapter-with-muxdata";
 import { ChapterNotFoundError } from "../../error/chapter-not-found-error";
+import { insertChapterSchema } from "@/db/schema";
 
 const Chapter = new Hono<{
   Variables: {
@@ -85,6 +86,39 @@ Chapter.get(
       return HandleError(c, error, "チャプター取得エラー");
     }
   },
-);
+)
+
+  /**
+   * チャプター登録API
+   * @route POST /api/courses/{course_id}/chapters
+   * @middleware validateAdminMiddleware - 管理者権限の検証
+   * @returns チャプター
+   * @throws CourseNotFoundError
+   * @throws チャプター登録エラー
+   */
+  .post(
+    "/",
+    validateAdminMiddleware,
+    zValidator("param", z.object({ course_id: z.string() })),
+    zValidator("json", insertChapterSchema.pick({ title: true })),
+    async (c) => {
+      const { course_id: courseId } = c.req.valid("param");
+      const validatedData = c.req.valid("json");
+      const chapterUseCase = c.get("chapterUseCase");
+      try {
+        const chapter: Chapter = await chapterUseCase.registerChapter(
+          courseId,
+          validatedData.title,
+        );
+        return c.json(chapter);
+      } catch (error) {
+        if (error instanceof CourseNotFoundError) {
+          console.error(`存在しない講座です: ID ${courseId}`);
+          return c.json(Messages.MSG_ERR_003(Entity.COURSE), 404);
+        }
+        return HandleError(c, error, "チャプター登録エラー");
+      }
+    },
+  );
 
 export default Chapter;

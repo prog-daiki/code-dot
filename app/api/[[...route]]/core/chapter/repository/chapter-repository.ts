@@ -1,9 +1,11 @@
 import { and, asc, eq } from "drizzle-orm";
+import { createId } from "@paralleldrive/cuid2";
 
 import { db } from "@/db/drizzle";
 import { Chapter } from "../types/chapter";
 import { chapter, muxData } from "@/db/schema";
 import { ChapterWithMuxData } from "../types/chapter-with-muxdata";
+import { getCurrentJstDate } from "../../../common/date";
 
 /**
  * チャプターのリポジトリを管理するクラス
@@ -60,6 +62,31 @@ export class ChapterRepository {
       .from(chapter)
       .leftJoin(muxData, eq(chapter.id, muxData.chapterId))
       .where(eq(chapter.id, chapterId));
+    return data;
+  }
+
+  /**
+   * チャプターを登録する
+   * @param courseId 講座ID
+   * @param title チャプター名
+   * @returns チャプター
+   */
+  async registerChapter(courseId: string, title: string): Promise<Chapter> {
+    const currentJstDate: Date = getCurrentJstDate();
+    const chapters: Chapter[] = await this.getChapters(courseId);
+    const newPosition: number =
+      chapters.length > 0 ? chapters[chapters.length - 1].position + 1 : 1;
+    const [data]: Chapter[] = await db
+      .insert(chapter)
+      .values({
+        id: createId(),
+        courseId,
+        title,
+        position: newPosition,
+        createDate: currentJstDate,
+        updateDate: currentJstDate,
+      })
+      .returning();
     return data;
   }
 }
