@@ -10,6 +10,7 @@ import { useGetChapters } from "@/features/chapter/api/use-get-chapters";
 import { IconBadge } from "@/app/_components/common/icon-badge";
 import { CourseActions } from "@/features/course/components/admin/course-actions";
 import { CourseTitleForm } from "@/features/course/components/admin/course-title-form";
+import { CourseDescriptionForm } from "@/features/course/components/admin/course-description-form";
 
 const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
   const { courseId } = params;
