@@ -80,7 +80,7 @@ export const ChapterList = ({ items, handleEdit, handleReorder }: ChapterListPro
                       </div>
                       {chapter.title}
                       <div className="ml-auto flex items-center gap-x-2 pr-2">
-                        <Badge className={cn("bg-slate-500", chapter.publishFlag && "bg-sky-700")}>
+                        <Badge className={cn("bg-slate-500 w-[46px]", chapter.publishFlag && "bg-sky-700")}>
                           {chapter.publishFlag ? "公開" : "非公開"}
                         </Badge>
                         <Pencil
