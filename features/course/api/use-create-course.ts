@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { InferRequestType, InferResponseType } from "hono";
 
 import { toast } from "sonner";
 import { client } from "@/lib/hono";
+import { Course } from "@/app/api/[[...route]]/core/course/types/course";
 
-type ResponseType = InferResponseType<typeof client.api.courses.$post>;
-type RequestType = InferRequestType<typeof client.api.courses.$post>["json"];
+type RequestType = Pick<Course, "title">;
+type ResponseType = Course;
 
 export const useCreateCourse = () => {
   const queryClient = useQueryClient();
@@ -14,7 +14,17 @@ export const useCreateCourse = () => {
       const response = await client.api.courses.$post({
         json,
       });
-      return await response.json();
+
+      if (!response.ok) {
+        throw new Error(`講座の作成に失敗しました: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return {
+        ...data,
+        createDate: new Date(data.createDate),
+        updateDate: new Date(data.updateDate),
+      };
     },
     onSuccess: () => {
       toast.success("講座を作成しました");
