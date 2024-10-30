@@ -6,6 +6,8 @@ import { AdminCourse } from "../types/admin-course";
 import { PurchaseCourse } from "../types/purchase-course";
 import { Course } from "../types/course";
 import { PublishCourseWithMuxData } from "../types/publish-course-with-muxdata";
+import { createId } from "@paralleldrive/cuid2";
+import { getCurrentJstDate } from "../../../common/date";
 
 /**
  * 講座のリポジトリを管理するクラス
@@ -245,6 +247,25 @@ export class CourseRepository {
         ),
       )
       .groupBy(course.id, category.id, purchase.id);
+    return data;
+  }
+
+  /**
+   * 講座を登録する
+   * @param title 講座のタイトル
+   * @returns {Promise<Course>} 登録された講座オブジェクト
+   */
+  async registerCourse(title: string): Promise<Course> {
+    const currentJstDate: Date = getCurrentJstDate();
+    const [data]: Course[] = await db
+      .insert(course)
+      .values({
+        id: createId(),
+        title,
+        createDate: currentJstDate,
+        updateDate: currentJstDate,
+      })
+      .returning();
     return data;
   }
 }

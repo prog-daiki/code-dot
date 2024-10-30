@@ -13,6 +13,7 @@ import type { Course } from "./types/course";
 import { Entity, Messages } from "../../common/message";
 import { CourseNotFoundError } from "../../error/course-not-found-error";
 import { PublishCourseWithMuxData } from "./types/publish-course-with-muxdata";
+import { insertCourseSchema } from "@/db/schema";
 
 const Course = new Hono<{
   Variables: {
@@ -150,6 +151,31 @@ const Course = new Hono<{
           return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
         }
         return HandleError(c, error, "公開講座取得エラー");
+      }
+    },
+  )
+
+  /**
+   * 講座登録API
+   * @route POST /api/courses
+   * @middleware validateAdminMiddleware - 管理者権限の検証
+   * @returns 登録した講座
+   * @throws 講座登録エラー
+   */
+  .post(
+    "/",
+    validateAdminMiddleware,
+    zValidator("json", insertCourseSchema.pick({ title: true })),
+    async (c) => {
+      const validatedData = c.req.valid("json");
+      const courseUseCase = c.get("courseUseCase");
+      try {
+        const course: Course = await courseUseCase.registerCourse(
+          validatedData.title,
+        );
+        return c.json(course);
+      } catch (error) {
+        return HandleError(c, error, "講座登録エラー");
       }
     },
   );
