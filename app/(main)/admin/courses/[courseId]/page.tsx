@@ -12,6 +12,7 @@ import { CourseActions } from "@/features/course/components/admin/course-actions
 import { CourseTitleForm } from "@/features/course/components/admin/course-title-form";
 import { CourseDescriptionForm } from "@/features/course/components/admin/course-description-form";
 import { CourseImageForm } from "@/features/course/components/admin/course-image-form";
+import { CourseCategoryForm } from "@/features/course/components/admin/course-category-form";
 
 const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
   const { courseId } = params;
@@ -72,10 +73,7 @@ const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
             <CourseTitleForm courseId={courseId} defaultValues={{ title: course.title }} />
             <CourseDescriptionForm courseId={courseId} defaultValues={{ description: course.description ?? "" }} />
             <CourseImageForm courseId={courseId} defaultValues={{ imageUrl: course.imageUrl ?? "" }} />
-            {/* <CourseCategoryForm
-              courseId={courseId}
-              defaultValues={{ categoryId: course.categoryId ?? "" }}
-            /> */}
+            <CourseCategoryForm courseId={courseId} defaultValues={{ categoryId: course.categoryId ?? "" }} />
             {/* <CoursePriceForm
               courseId={courseId}
               defaultValues={{ price: course.price ?? 0 }}
