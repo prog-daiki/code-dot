@@ -1,11 +1,16 @@
-import { Course } from "@/app/api/[[...route]]/core/course/types/course";
-import { client } from "@/lib/hono";
+import { InferResponseType } from "hono";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
+
+import { client } from "@/lib/hono";
+
+type ResponseType = InferResponseType<
+  (typeof client.api.courses)[":course_id"]["$get"]
+>;
 
 export const useGetCourse = (
   courseId: string,
-): UseQueryResult<Course, Error> => {
-  return useQuery<Course, Error>({
+): UseQueryResult<ResponseType, Error> => {
+  return useQuery<ResponseType, Error>({
     queryKey: ["course", courseId],
     queryFn: async () => {
       const response = await client.api.courses[":course_id"].$get({
@@ -16,13 +21,7 @@ export const useGetCourse = (
         throw new Error(`講座取得に失敗しました: ${response.statusText}`);
       }
 
-      const data = await response.json();
-      const course: Course = {
-        ...data,
-        createDate: new Date(data.createDate),
-        updateDate: new Date(data.updateDate),
-      };
-      return course;
+      return await response.json();
     },
   });
 };
