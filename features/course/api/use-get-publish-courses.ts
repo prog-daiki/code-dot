@@ -1,7 +1,7 @@
+import { client } from "@/lib/hono";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
 import { PublishCourse } from "@/app/api/[[...route]]/core/course/types/publish-course";
-import { client } from "@/lib/hono";
 
 interface PublishCoursesParams {
   title: string;

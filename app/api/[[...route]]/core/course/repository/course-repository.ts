@@ -1,12 +1,13 @@
+import { and, desc, eq, ilike, sql } from "drizzle-orm";
+import { createId } from "@paralleldrive/cuid2";
+
 import { db } from "@/db/drizzle";
 import { PublishCourse } from "../types/publish-course";
 import { category, chapter, course, muxData, purchase } from "@/db/schema";
-import { and, desc, eq, ilike, sql } from "drizzle-orm";
 import { AdminCourse } from "../types/admin-course";
 import { PurchaseCourse } from "../types/purchase-course";
 import { Course } from "../types/course";
 import { PublishCourseWithMuxData } from "../types/publish-course-with-muxdata";
-import { createId } from "@paralleldrive/cuid2";
 import { getCurrentJstDate } from "../../../common/date";
 
 /**
@@ -265,6 +266,41 @@ export class CourseRepository {
         createDate: currentJstDate,
         updateDate: currentJstDate,
       })
+      .returning();
+    return data;
+  }
+
+  /**
+   * 講座を更新する
+   * @param courseId 講座ID
+   * @param updateData 更新するデータ
+   * @returns 更新された講座
+   */
+  async updateCourse(
+    courseId: string,
+    updateData: Partial<Omit<typeof course.$inferInsert, "id" | "createDate">>,
+  ) {
+    const currentJstDate: Date = getCurrentJstDate();
+    const [data]: Course[] = await db
+      .update(course)
+      .set({
+        ...updateData,
+        updateDate: currentJstDate,
+      })
+      .where(eq(course.id, courseId))
+      .returning();
+    return data;
+  }
+
+  /**
+   * 講座を物理削除する
+   * @param courseId
+   * @returns
+   */
+  async deleteCourse(courseId: string): Promise<Course> {
+    const [data] = await db
+      .delete(course)
+      .where(eq(course.id, courseId))
       .returning();
     return data;
   }
