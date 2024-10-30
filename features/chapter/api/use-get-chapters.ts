@@ -1,15 +1,11 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { InferResponseType } from "hono";
 
 import { client } from "@/lib/hono";
+import { Chapter } from "@/app/api/[[...route]]/core/chapter/types/chapter";
 
-type ResponseType = InferResponseType<
-  (typeof client.api.courses)[":course_id"]["chapters"]["$get"]
->;
+type ResponseType = Chapter[];
 
-export const useGetChapters = (
-  courseId: string,
-): UseQueryResult<ResponseType, Error> => {
+export const useGetChapters = (courseId: string): UseQueryResult<ResponseType, Error> => {
   return useQuery<ResponseType, Error>({
     queryKey: ["chapters", courseId],
     queryFn: async () => {
@@ -18,12 +14,15 @@ export const useGetChapters = (
       });
 
       if (!response.ok) {
-        throw new Error(
-          `チャプターの一覧取得に失敗しました: ${response.statusText}`,
-        );
+        throw new Error(`チャプターの一覧取得に失敗しました: ${response.statusText}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      return data.map((chapter) => ({
+        ...chapter,
+        createDate: new Date(chapter.createDate),
+        updateDate: new Date(chapter.updateDate),
+      }));
     },
   });
 };
