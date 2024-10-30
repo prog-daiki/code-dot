@@ -275,4 +275,47 @@ export class ChapterUseCase {
     }
     return chapter;
   }
+
+  /**
+   * 講座のチャプターを非公開にする
+   * @param courseId 講座ID
+   * @param chapterId チャプターID
+   */
+  async unpublishChapter(
+    courseId: string,
+    chapterId: string,
+  ): Promise<Chapter> {
+    // 講座の存在チェック
+    const isCourseExists: boolean = await this.courseRepository.isCourseExists(
+      courseId,
+    );
+    if (!isCourseExists) {
+      throw new CourseNotFoundError();
+    }
+
+    // チャプターの存在チェック
+    const isChapterExists: boolean =
+      await this.chapterRepository.isChapterExists(chapterId);
+    if (!isChapterExists) {
+      throw new ChapterNotFoundError();
+    }
+
+    const chapter: Chapter = await this.chapterRepository.updateChapter(
+      chapterId,
+      {
+        publishFlag: false,
+      },
+    );
+
+    // 講座のチャプターが0件になった場合、講座を非公開にする
+    const chapters: Chapter[] = await this.chapterRepository.getPublishChapters(
+      courseId,
+    );
+    if (chapters.length === 0) {
+      await this.courseRepository.updateCourse(courseId, {
+        publishFlag: false,
+      });
+    }
+    return chapter;
+  }
 }
