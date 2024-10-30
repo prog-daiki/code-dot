@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/localizations": "^3.4.0",
     "@clerk/nextjs": "^6.0.2",
+    "@hello-pangea/dnd": "^17.0.0",
     "@hono/clerk-auth": "^2.0.0",
     "@hono/zod-validator": "^0.4.1",
     "@hookform/resolvers": "^3.9.1",

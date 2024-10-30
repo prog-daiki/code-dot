@@ -15,6 +15,7 @@ import { CourseImageForm } from "@/features/course/components/admin/course-image
 import { CourseCategoryForm } from "@/features/course/components/admin/course-category-form";
 import { CoursePriceForm } from "@/features/course/components/admin/course-price-form";
 import { CourseSourceUrlForm } from "@/features/course/components/admin/course-source-url-form";
+import { ChapterForm } from "@/features/chapter/components/chapter-form";
 
 const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
   const { courseId } = params;
@@ -85,7 +86,7 @@ const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
                 <IconBadge icon={ListChecks} />
                 <h2 className="text-xl font-semibold">チャプター</h2>
               </div>
-              {/* <ChapterForm courseId={course.id} /> */}
+              <ChapterForm courseId={course.id} />
             </div>
           </div>
         </div>
