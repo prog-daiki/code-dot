@@ -11,6 +11,7 @@ import { useGetChapter } from "@/features/chapter/api/use-get-chapter";
 import { ChapterTitleForm } from "@/features/chapter/components/chapter-title-form";
 import { ChapterDescriptionForm } from "@/features/chapter/components/chapter-description-form";
 import { ChapterVideoForm } from "@/features/chapter/components/chapter-video-form";
+import { ChapterActions } from "@/features/chapter/components/chapter-actions";
 
 const AdminChapterPage = ({ params }: { params: { courseId: string; chapterId: string } }) => {
   const { courseId, chapterId } = params;
@@ -52,12 +53,12 @@ const AdminChapterPage = ({ params }: { params: { courseId: string; chapterId: s
             <h1 className="text-2xl font-bold">チャプター設定</h1>
             <span className="text-sm text-slate-700">入力済みの必須項目 {completionText}</span>
           </div>
-          {/* <ChapterActions
+          <ChapterActions
             courseId={courseId}
             chapterId={chapterId}
             disabled={!isComplete}
             isPublished={chapter.publishFlag!}
-          /> */}
+          />
         </div>
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-4">
