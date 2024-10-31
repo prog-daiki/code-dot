@@ -40,6 +40,7 @@ export const CourseTitleForm = ({ courseId, defaultValues }: CourseTitleFormProp
     },
     [mutation, toggleEdit],
   );
+
   const EditButton = memo(({ isEditing, onClick }: { isEditing: boolean; onClick: () => void }) => (
     <Button className="px-4" onClick={onClick} variant="ghost">
       {isEditing ? (
