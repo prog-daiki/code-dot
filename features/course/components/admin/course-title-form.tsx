@@ -30,16 +30,16 @@ export const CourseTitleForm = ({ courseId, defaultValues }: CourseTitleFormProp
   });
 
   const handleSubmit = useCallback(
-    (values: FormValues) => {
-      mutation.mutate(values, {
-        onSuccess: () => {
-          toggleEdit();
-        },
-      });
+    async (values: FormValues) => {
+      try {
+        await mutation.mutateAsync(values);
+        toggleEdit();
+      } catch (error) {
+        console.error("エラーが発生しました:", error);
+      }
     },
     [mutation, toggleEdit],
   );
-
   const EditButton = memo(({ isEditing, onClick }: { isEditing: boolean; onClick: () => void }) => (
     <Button className="px-4" onClick={onClick} variant="ghost">
       {isEditing ? (
