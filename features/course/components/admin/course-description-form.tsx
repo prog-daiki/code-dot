@@ -3,23 +3,14 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useUpdateCourseDescription } from "../../api/use-update-course-description";
 
 const formSchema = z.object({
-  description: z
-    .string()
-    .min(1, "詳細は1文字以上です")
-    .max(1000, "詳細は1000文字以内です"),
+  description: z.string().min(1, "詳細は1文字以上です").max(1000, "詳細は1000文字以内です"),
 });
 
 type FormValues = z.input<typeof formSchema>;
@@ -29,10 +20,7 @@ interface CourseDescriptionFormProps {
   defaultValues?: FormValues;
 }
 
-export const CourseDescriptionForm = ({
-  courseId,
-  defaultValues,
-}: CourseDescriptionFormProps) => {
+export const CourseDescriptionForm = ({ courseId, defaultValues }: CourseDescriptionFormProps) => {
   const mutation = useUpdateCourseDescription(courseId);
   const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
@@ -68,20 +56,13 @@ export const CourseDescriptionForm = ({
         </Button>
       </div>
       {!isEditing && (
-        <p
-          className={`mt-2 text-sm ${
-            !defaultValues?.description ? "text-muted-foreground" : ""
-          }`}
-        >
+        <p className={`mt-2 text-sm ${!defaultValues?.description ? "text-muted-foreground" : ""}`}>
           {defaultValues?.description || "詳細が未登録です"}
         </p>
       )}
       {isEditing && (
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
-          >
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               name="description"
               control={form.control}
@@ -92,6 +73,7 @@ export const CourseDescriptionForm = ({
                       className="w-full rounded-md focus-visible:ring-slate-200"
                       disabled={mutation.isPending}
                       placeholder="講座の詳細を入力してください"
+                      rows={10}
                       {...field}
                     />
                   </FormControl>
