@@ -16,6 +16,7 @@
     "@hono/zod-validator": "^0.4.1",
     "@hookform/resolvers": "^3.9.1",
     "@mux/mux-node": "^8.8.0",
+    "@mux/mux-player-react": "^3.1.0",
     "@paralleldrive/cuid2": "^2.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.2",

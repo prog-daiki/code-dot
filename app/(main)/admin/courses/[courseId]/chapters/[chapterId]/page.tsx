@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useGetChapter } from "@/features/chapter/api/use-get-chapter";
 import { ChapterTitleForm } from "@/features/chapter/components/chapter-title-form";
 import { ChapterDescriptionForm } from "@/features/chapter/components/chapter-description-form";
+import { ChapterVideoForm } from "@/features/chapter/components/chapter-video-form";
 
 const AdminChapterPage = ({ params }: { params: { courseId: string; chapterId: string } }) => {
   const { courseId, chapterId } = params;
@@ -77,7 +78,7 @@ const AdminChapterPage = ({ params }: { params: { courseId: string; chapterId: s
                 <IconBadge icon={Video} />
                 <h2 className="text-xl font-semibold">動画</h2>
               </div>
-              {/* <ChapterVideoForm courseId={courseId} chapterId={chapterId} chapter={chapter} muxData={muxData!} /> */}
+              <ChapterVideoForm courseId={courseId} chapterId={chapterId} chapter={chapter} muxData={muxData!} />
             </div>
           </div>
         </div>
