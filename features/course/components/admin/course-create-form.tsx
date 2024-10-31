@@ -1,22 +1,12 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const formSchema = z.object({
-  title: z
-    .string()
-    .min(1, "タイトルは1文字以上です")
-    .max(100, "タイトルは100文字以内です"),
+  title: z.string().min(1, "タイトルは1文字以上です").max(100, "タイトルは100文字以内です"),
 });
 
 type FormValues = z.input<typeof formSchema>;
@@ -27,11 +17,7 @@ interface CourseCreateFormProps {
   disabled?: boolean;
 }
 
-export const CourseCreateForm = ({
-  defaultValues,
-  onSubmit,
-  disabled,
-}: CourseCreateFormProps) => {
+export const CourseCreateForm = ({ defaultValues, onSubmit, disabled }: CourseCreateFormProps) => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -39,6 +25,7 @@ export const CourseCreateForm = ({
 
   const handleSubmit = (values: FormValues) => {
     onSubmit(values);
+    form.reset();
   };
 
   return (
