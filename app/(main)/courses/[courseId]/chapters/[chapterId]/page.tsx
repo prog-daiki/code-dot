@@ -4,10 +4,19 @@ import { Separator } from "@/components/ui/separator";
 import { useGetChapter } from "@/features/chapter/api/use-get-chapter";
 import MuxPlayer from "@mux/mux-player-react";
 import { Loader2 } from "lucide-react";
+import { redirect } from "next/navigation";
 
 const ChapterPage = ({ params }: { params: { courseId: string; chapterId: string } }) => {
   const { courseId, chapterId } = params;
-  const { data: chapter, isLoading } = useGetChapter(courseId, chapterId);
+  const { data: chapter, isLoading, error } = useGetChapter(courseId, chapterId);
+
+  if (error) {
+    return (
+      <div className="w-full min-h-screen flex justify-center bg-white pt-40">
+        <p className="text-red-500">エラーが発生しました。再度お試しください。</p>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -15,6 +24,10 @@ const ChapterPage = ({ params }: { params: { courseId: string; chapterId: string
         <Loader2 className="size-12 animate-spin" />
       </div>
     );
+  }
+
+  if (!chapter) {
+    return redirect(`/courses/${courseId}`);
   }
 
   return (
