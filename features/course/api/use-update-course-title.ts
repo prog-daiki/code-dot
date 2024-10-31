@@ -26,8 +26,11 @@ export const useUpdateCourseTitle = (courseId: string) => {
       };
     },
     onSuccess: (updatedCourse) => {
-      queryClient.invalidateQueries({ queryKey: ["courses"] });
       queryClient.setQueryData(["course", courseId], updatedCourse);
+      queryClient.setQueriesData({ queryKey: ["courses"] }, (oldData: any) => {
+        if (!oldData) return oldData;
+        return oldData.map((course: Course) => (course.id === courseId ? updatedCourse : course));
+      });
       toast.success("講座のタイトルを更新しました");
     },
     onError: (error) => {
