@@ -25,23 +25,7 @@ export const useUpdateCourseTitle = (courseId: string) => {
         updateDate: new Date(data.updateDate),
       };
     },
-    onMutate: async (newTitle) => {
-      await queryClient.cancelQueries({ queryKey: ["course", courseId] });
-      const previousCourse = queryClient.getQueryData<Course>(["course", courseId]);
-      if (previousCourse) {
-        queryClient.setQueryData(["course", courseId], {
-          ...previousCourse,
-          title: newTitle.title,
-        });
-      }
-      return { previousCourse };
-    },
-    onSuccess: (data) => {
-      const updatedCourse = {
-        ...data,
-        createDate: new Date(data.createDate),
-        updateDate: new Date(data.updateDate),
-      };
+    onSuccess: (updatedCourse) => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
       queryClient.setQueryData(["course", courseId], updatedCourse);
       toast.success("講座のタイトルを更新しました");
