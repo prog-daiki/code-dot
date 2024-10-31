@@ -14,7 +14,7 @@ export const useGetChapter = (courseId: string, chapterId: string): UseQueryResu
       });
 
       if (!response.ok) {
-        throw new Error(`講座取得に失敗しました: ${response.statusText}`);
+        throw new Error(`チャプター取得に失敗しました: ${response.statusText}`);
       }
 
       const data = await response.json();
