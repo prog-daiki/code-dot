@@ -5,7 +5,7 @@ import { PlayerChapter } from "./_components/player-chapter";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 
 const ChapterLayout = ({
@@ -23,6 +23,15 @@ const ChapterLayout = ({
   } = useGetPublishCourse({
     courseId,
   });
+
+  if (isLoading) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-white pb-60">
+        <Loader2 className="size-12 animate-spin" />
+      </div>
+    );
+  }
+
   const course = publishCourse?.course;
   const category = publishCourse?.category;
   const chapters = publishCourse?.chapters;

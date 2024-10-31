@@ -3,10 +3,19 @@
 import { Separator } from "@/components/ui/separator";
 import { useGetChapter } from "@/features/chapter/api/use-get-chapter";
 import MuxPlayer from "@mux/mux-player-react";
+import { Loader2 } from "lucide-react";
 
 const ChapterPage = ({ params }: { params: { courseId: string; chapterId: string } }) => {
   const { courseId, chapterId } = params;
-  const { data: chapter } = useGetChapter(courseId, chapterId);
+  const { data: chapter, isLoading } = useGetChapter(courseId, chapterId);
+
+  if (isLoading) {
+    return (
+      <div className="w-full min-h-screen flex justify-center bg-white pt-40">
+        <Loader2 className="size-12 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <>
