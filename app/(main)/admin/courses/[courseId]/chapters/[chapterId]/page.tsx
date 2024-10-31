@@ -8,6 +8,7 @@ import { Banner } from "@/app/_components/common/banner";
 import { IconBadge } from "@/app/_components/common/icon-badge";
 import { Button } from "@/components/ui/button";
 import { useGetChapter } from "@/features/chapter/api/use-get-chapter";
+import { ChapterTitleForm } from "@/features/chapter/components/chapter-title-form";
 
 const AdminChapterPage = ({ params }: { params: { courseId: string; chapterId: string } }) => {
   const { courseId, chapterId } = params;
@@ -62,7 +63,7 @@ const AdminChapterPage = ({ params }: { params: { courseId: string; chapterId: s
               <IconBadge icon={LayoutDashboard} />
               <h2 className="text-xl font-semibold">チャプターのカスタマイズ</h2>
             </div>
-            {/* <ChapterTitleForm courseId={courseId} chapterId={chapterId} defaultValues={{ title: chapter.title }} /> */}
+            <ChapterTitleForm courseId={courseId} chapterId={chapterId} defaultValues={{ title: chapter.title }} />
             {/* <ChapterDescriptionForm
               courseId={courseId}
               chapterId={chapterId}
