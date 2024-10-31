@@ -13,6 +13,7 @@ import { ChapterNotFoundError } from "../../error/chapter-not-found-error";
 import { insertChapterSchema } from "@/db/schema";
 import { MuxDataNotFoundError } from "../../error/muxdata-not-found-error";
 import { ChapterRequiredFieldsEmptyError } from "../../error/chapter-required-field-empty-error";
+import { validateAuthMiddleware } from "../../auth/validate-auth-middleware";
 
 const Chapter = new Hono<{
   Variables: {
@@ -58,7 +59,7 @@ const Chapter = new Hono<{
    */
   .get(
     "/:chapter_id",
-    validateAdminMiddleware,
+    validateAuthMiddleware,
     zValidator("param", z.object({ course_id: z.string(), chapter_id: z.string() })),
     async (c) => {
       const { course_id: courseId, chapter_id: chapterId } = c.req.valid("param");
