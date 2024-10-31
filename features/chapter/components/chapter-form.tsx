@@ -55,6 +55,7 @@ export const ChapterForm = ({ courseId }: ChapterFormProps) => {
       onSuccess: () => {
         toggleCreating();
         router.refresh();
+        form.reset();
       },
     });
   };

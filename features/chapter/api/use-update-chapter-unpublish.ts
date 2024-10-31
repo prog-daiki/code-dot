@@ -27,6 +27,9 @@ export const useUpdateChapterUnPublish = (courseId: string, chapterId: string) =
       queryClient.invalidateQueries({
         queryKey: ["chapter", courseId, chapterId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["chapters", courseId],
+      });
       queryClient.setQueryData(["chapter", chapterId], updatedChapter);
       toast.success("チャプターを非公開しました");
     },
