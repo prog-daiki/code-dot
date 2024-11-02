@@ -29,6 +29,9 @@ export const useUpdateChapterTitle = (courseId: string, chapterId: string) => {
       queryClient.invalidateQueries({
         queryKey: ["chapter", courseId, chapterId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["chapters", courseId],
+      });
       queryClient.setQueryData(["chapter", chapterId], updatedChapter);
       toast.success("チャプターのタイトルを更新しました");
     },
