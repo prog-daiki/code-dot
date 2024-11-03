@@ -41,7 +41,6 @@ const CourseController = new Hono<{
     const courseUseCase = c.get("courseUseCase");
     try {
       const courses: AdminCourse[] = await courseUseCase.getCourses();
-      console.log(`講座一覧を取得しました: ${courses.length}件`);
       return c.json(courses);
     } catch (error) {
       return HandleError(c, error, "講座一覧取得エラーが発生しました。");

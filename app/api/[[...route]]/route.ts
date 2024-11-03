@@ -20,14 +20,11 @@ app.use(
   logger(),
 );
 
-const routes = app
-  .route("/categories", CategoryController)
-  .route("/courses", Course)
-  .route("/courses/:course_id/chapters", Chapter);
+app.route("/categories", CategoryController).route("/courses", Course).route("/courses/:course_id/chapters", Chapter);
 
 export const GET = handle(app);
 export const POST = handle(app);
 export const PUT = handle(app);
 export const DELETE = handle(app);
 
-export type AppType = typeof routes;
+export type AppType = typeof app;

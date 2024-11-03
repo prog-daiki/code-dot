@@ -33,7 +33,7 @@ const ChapterPage = ({ params }: { params: { courseId: string; chapterId: string
   return (
     <>
       <div className="relative aspect-video space-y-4">
-        <MuxPlayer playbackId={chapter?.mux_data?.playbackId!} className="shadow-md" autoPlay />
+        <MuxPlayer playbackId={chapter?.mux_data?.playbackId ?? ""} className="shadow-md" autoPlay />
         <div className="flex flex-col space-y-4 border p-4 rounded-md shadow-md">
           <h1 className="text-2xl font-bold">{chapter?.chapter.title}</h1>
           <Separator />
