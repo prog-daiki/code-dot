@@ -30,7 +30,7 @@ export const useUpdateCoursePublish = (courseId: string) => {
       queryClient.invalidateQueries({ queryKey: ["course", courseId] });
       queryClient.setQueryData(["course", courseId], updatedCourse);
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("講座の公開に失敗しました");
     },
   });

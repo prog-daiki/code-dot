@@ -32,7 +32,7 @@ export const useUpdateCourseDescription = (courseId: string) => {
       queryClient.invalidateQueries({ queryKey: ["course", courseId] });
       queryClient.setQueryData(["course", courseId], updatedCourse);
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("講座の詳細の更新に失敗しました");
     },
   });
