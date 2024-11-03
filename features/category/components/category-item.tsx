@@ -2,7 +2,6 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
-import qs from "query-string";
 
 import { cn } from "@/lib/utils";
 
@@ -12,31 +11,22 @@ interface CategoryItemProps {
   isSelected: boolean;
 }
 
-export const CategoryItem = ({
-  label,
-  value,
-  isSelected,
-}: CategoryItemProps) => {
+export const CategoryItem = ({ label, value, isSelected }: CategoryItemProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const currentTitle = searchParams.get("title");
-
   const handleClick = useCallback(() => {
-    const url = qs.stringifyUrl(
-      {
-        url: pathname,
-        query: {
-          title: currentTitle,
-          categoryId: isSelected ? undefined : value,
-        },
-      },
-      { skipNull: true, skipEmptyString: true },
-    );
+    const current = new URLSearchParams(searchParams.toString());
 
-    router.push(url);
-  }, [pathname, currentTitle, isSelected, value, router]);
+    if (isSelected) {
+      current.delete("categoryId");
+    } else {
+      current.set("categoryId", value);
+    }
+
+    router.push(`${pathname}?${current.toString()}`);
+  }, [pathname, searchParams, isSelected, value, router]);
 
   return (
     <button
