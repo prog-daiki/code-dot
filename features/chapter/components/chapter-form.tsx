@@ -25,6 +25,12 @@ const formSchema = z.object({
 
 type FormValues = z.input<typeof formSchema>;
 
+const LoadingOverlay = () => (
+  <div className="absolute right-0 top-0 flex size-full items-center justify-center rounded-md bg-slate-500/20">
+    <Loader2 className="size-6 animate-spin text-sky-700" />
+  </div>
+);
+
 export const ChapterForm = ({ courseId }: ChapterFormProps) => {
   const { data: chapters = [] } = useGetChapters(courseId);
   const reorderMutation = useReorderChapter(courseId);
@@ -62,11 +68,7 @@ export const ChapterForm = ({ courseId }: ChapterFormProps) => {
 
   return (
     <div className="relative rounded-md border p-4 shadow-md">
-      {isUpdating && (
-        <div className="absolute right-0 top-0 flex size-full items-center justify-center rounded-md bg-slate-500/20">
-          <Loader2 className="size-6 animate-spin text-sky-700" />
-        </div>
-      )}
+      {isUpdating && <LoadingOverlay />}
       <div className="flex items-center justify-between font-medium">
         チャプター
         <Button onClick={toggleCreating} variant="ghost">
