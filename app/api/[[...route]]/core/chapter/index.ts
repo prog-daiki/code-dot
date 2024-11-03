@@ -5,7 +5,7 @@ import { zValidator } from "@hono/zod-validator";
 import { validateAdminMiddleware } from "../../auth/validate-admin-middleware";
 import type { Chapter } from "./types/chapter";
 import { CourseNotFoundError } from "../../error/course-not-found-error";
-import { Entity, Messages } from "../../common/message";
+import { Messages } from "../../common/message";
 import { HandleError } from "../../error/handle-error";
 import { ChapterUseCase } from "./usecase/chapter-usecase";
 import { ChapterWithMuxData } from "./types/chapter-with-muxdata";
@@ -15,7 +15,7 @@ import { MuxDataNotFoundError } from "../../error/muxdata-not-found-error";
 import { ChapterRequiredFieldsEmptyError } from "../../error/chapter-required-field-empty-error";
 import { validateAuthMiddleware } from "../../auth/validate-auth-middleware";
 
-const Chapter = new Hono<{
+const ChapterController = new Hono<{
   Variables: {
     chapterUseCase: ChapterUseCase;
   };
@@ -363,4 +363,4 @@ const Chapter = new Hono<{
     },
   );
 
-export default Chapter;
+export default ChapterController;

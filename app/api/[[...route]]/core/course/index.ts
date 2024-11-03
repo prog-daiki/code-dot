@@ -11,7 +11,7 @@ import { validateAdminMiddleware } from "../../auth/validate-admin-middleware";
 import { AdminCourse } from "./types/admin-course";
 import { PurchaseCourse } from "./types/purchase-course";
 import type { Course } from "./types/course";
-import { Entity, Messages } from "../../common/message";
+import { Messages } from "../../common/message";
 import { CourseNotFoundError } from "../../error/course-not-found-error";
 import { PublishCourseWithMuxData } from "./types/publish-course-with-muxdata";
 import { insertCourseSchema } from "@/db/schema";
@@ -20,7 +20,7 @@ import { CourseRequiredFieldsEmptyError } from "../../error/course-required-fiel
 import { CourseNotFreeError } from "../../error/course-not-free-error";
 import { PurchaseAlreadyExistsError } from "../../error/purchase-already-exists-error";
 
-const Course = new Hono<{
+const CourseController = new Hono<{
   Variables: {
     courseUseCase: CourseUseCase;
   };
@@ -474,4 +474,4 @@ const Course = new Hono<{
     },
   );
 
-export default Course;
+export default CourseController;
