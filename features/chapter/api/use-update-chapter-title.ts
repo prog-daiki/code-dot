@@ -35,7 +35,7 @@ export const useUpdateChapterTitle = (courseId: string, chapterId: string) => {
       queryClient.setQueryData(["chapter", chapterId], updatedChapter);
       toast.success("チャプターのタイトルを更新しました");
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("チャプターのタイトルの更新に失敗しました");
     },
   });

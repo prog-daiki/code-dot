@@ -32,7 +32,7 @@ export const useUpdateChapterVideo = (courseId: string, chapterId: string) => {
       queryClient.setQueryData(["chapter", chapterId], updatedChapter);
       toast.success("チャプターの動画を更新しました");
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("チャプターの動画の更新に失敗しました");
     },
   });

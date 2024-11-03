@@ -29,7 +29,7 @@ export const useDeleteCourse = (courseId: string) => {
       toast.success("講座を削除しました");
       queryClient.invalidateQueries({ queryKey: ["courses"] });
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("講座の削除に失敗しました");
     },
   });

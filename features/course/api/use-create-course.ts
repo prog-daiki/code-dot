@@ -30,7 +30,7 @@ export const useCreateCourse = () => {
       toast.success("講座を作成しました");
       queryClient.invalidateQueries({ queryKey: ["courses"] });
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("講座の作成に失敗しました");
     },
   });

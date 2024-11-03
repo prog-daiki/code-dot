@@ -30,7 +30,7 @@ export const useUpdateCourseTitle = (courseId: string) => {
       queryClient.setQueryData(["course", courseId], updatedCourse);
       toast.success("講座のタイトルを更新しました");
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("講座のタイトルの更新に失敗しました");
     },
   });

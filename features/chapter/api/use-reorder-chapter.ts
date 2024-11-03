@@ -22,11 +22,11 @@ export const useReorderChapter = (courseId: string) => {
       });
       return { status: response.status };
     },
-    onSuccess: (updatedChapters) => {
+    onSuccess: () => {
       toast.success("チャプターの順番を更新しました");
       queryClient.invalidateQueries({ queryKey: ["chapters", courseId] });
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("チャプターの順番の更新に失敗しました");
     },
   });

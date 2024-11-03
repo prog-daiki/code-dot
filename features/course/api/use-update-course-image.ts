@@ -31,7 +31,7 @@ export const useUpdateCourseImage = (courseId: string) => {
       queryClient.invalidateQueries({ queryKey: ["course", courseId] });
       queryClient.setQueryData(["course", courseId], updatedCourse);
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("講座のサムネイルの更新に失敗しました");
     },
   });

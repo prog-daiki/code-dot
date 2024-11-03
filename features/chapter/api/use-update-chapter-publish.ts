@@ -33,7 +33,7 @@ export const useUpdateChapterPublish = (courseId: string, chapterId: string) => 
       queryClient.setQueryData(["chapter", chapterId], updatedChapter);
       toast.success("チャプターを公開しました");
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("チャプターの公開に失敗しました");
     },
   });
