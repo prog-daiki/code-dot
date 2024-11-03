@@ -7,7 +7,7 @@ const footerLinks = [
 
 export const FooterLinks = () => {
   return (
-    <div className="flex items-center gap-x-4">
+    <div className="flex items-center gap-x-4 text-sm">
       {footerLinks.map(({ href, text }) => (
         <Link className="transition hover:underline" href={href} key={href}>
           {text}
