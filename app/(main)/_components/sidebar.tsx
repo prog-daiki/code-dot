@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -8,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 interface SidebarProps {
   isAdmin: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface NavItem {
@@ -32,18 +33,8 @@ export const Sidebar = ({ isAdmin, setOpen }: SidebarProps) => {
       {navItems.map(
         (item) =>
           (isAdmin || !item.adminOnly) && (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-            >
-              <Button
-                variant="ghost"
-                className={cn(
-                  "justify-start w-full",
-                  isActive(item.href) && "bg-gray-100",
-                )}
-              >
+            <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
+              <Button variant="ghost" className={cn("justify-start w-full", isActive(item.href) && "bg-gray-100")}>
                 {item.label}
               </Button>
             </Link>
