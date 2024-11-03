@@ -18,7 +18,7 @@ export const useGetChapters = (courseId: string): UseQueryResult<ResponseType, E
       }
 
       const data = await response.json();
-      return data.map((chapter) => ({
+      return data.map((chapter: Chapter) => ({
         ...chapter,
         createDate: new Date(chapter.createDate),
         updateDate: new Date(chapter.updateDate),

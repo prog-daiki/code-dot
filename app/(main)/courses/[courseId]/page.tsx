@@ -14,11 +14,7 @@ import { usePurchaseFreeCourse } from "@/features/course/api/use-purchase-free-c
 
 const CoursePage = ({ params }: { params: { courseId: string } }) => {
   const { courseId } = params;
-  const {
-    data: publishCourse,
-    isLoading,
-    error,
-  } = useGetPublishCourse({
+  const { data: publishCourse, isLoading } = useGetPublishCourse({
     courseId,
   });
   const { mutate: purchaseFreeCourse } = usePurchaseFreeCourse(courseId);
@@ -39,8 +35,8 @@ const CoursePage = ({ params }: { params: { courseId: string } }) => {
   const course = publishCourse?.course;
   const chapters = publishCourse?.chapters;
   const category = publishCourse?.category;
-  const purchased = publishCourse?.purchased!;
-  const chaptersLength = publishCourse?.chapters!.length;
+  const purchased = publishCourse?.purchased ?? false;
+  const chaptersLength = publishCourse?.chapters?.length ?? 0;
 
   const handleStudy = () => {
     router.push(`/courses/${courseId}/chapters/${chapters![0].id}`);
@@ -66,7 +62,7 @@ const CoursePage = ({ params }: { params: { courseId: string } }) => {
           <p className="text-muted-foreground text-sm">{course?.description}</p>
           <div className="flex items-center gap-x-2">
             <p className="text-sky-900 text-md lg:text-xl font-bold">
-              {purchased ? "購入済み" : course?.price === 0 ? "無料" : formatPrice(course?.price!)}
+              {purchased ? "購入済み" : course?.price === 0 ? "無料" : formatPrice(course?.price ?? 0)}
             </p>
             <div className="flex items-center gap-x-2">
               <div className="flex items-center gap-x-1 text-slate-500">
@@ -79,11 +75,15 @@ const CoursePage = ({ params }: { params: { courseId: string } }) => {
             </div>
           </div>
           <div className="flex space-x-4 text-xs lg:text-sm">
-            <p className="text-muted-foreground">更新日時：{new Date(course?.updateDate!).toLocaleDateString()}</p>
-            <p className="text-muted-foreground">作成日時：{new Date(course?.createDate!).toLocaleDateString()}</p>
+            <p className="text-muted-foreground">
+              更新日時：{new Date(course?.updateDate ?? new Date()).toLocaleDateString()}
+            </p>
+            <p className="text-muted-foreground">
+              作成日時：{new Date(course?.createDate ?? new Date()).toLocaleDateString()}
+            </p>
           </div>
           <div className="flex gap-4">
-            <Link href={course?.sourceUrl!} target="_blank">
+            <Link href={course?.sourceUrl ?? "#"} target="_blank">
               <Button variant="outline" className="gap-2">
                 <FaGithub className="size-4" />
                 Source Code
@@ -99,7 +99,7 @@ const CoursePage = ({ params }: { params: { courseId: string } }) => {
           </div>
         </div>
         <div className="relative aspect-video col-span-3 px-4 space-y-4">
-          <MuxPlayer playbackId={chapters![0].muxData?.playbackId!} className="shadow-md" autoPlay />
+          <MuxPlayer playbackId={chapters?.[0]?.muxData?.playbackId ?? ""} className="shadow-md" autoPlay />
           <div className="shadow-sm">
             <div className="bg-slate-600 p-4 rounded-t-md text-white">
               <h3 className="text-xl font-bold">Chapter</h3>
@@ -110,7 +110,6 @@ const CoursePage = ({ params }: { params: { courseId: string } }) => {
                   key={chapter.id}
                   purchased={purchased}
                   chapterTitle={chapter.title}
-                  chapterDescription={chapter.description!}
                   courseId={params.courseId}
                   chapterId={chapter.id}
                 />

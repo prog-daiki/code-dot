@@ -1,6 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { createUploadthing } from "uploadthing/next";
-import type { FileRouter } from "uploadthing/next";
+import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UTApi } from "uploadthing/server";
 
 const f = createUploadthing();
@@ -8,8 +7,9 @@ const utapi = new UTApi();
 
 const handleAuth = async () => {
   const { userId } = await auth();
-  if (!userId || userId !== process.env.ADMIN_USER_ID)
+  if (!userId || userId !== process.env.ADMIN_USER_ID) {
     throw new Error("認証されていません");
+  }
   return { userId };
 };
 
@@ -27,12 +27,8 @@ export const ourFileRouter = {
       setTimeout(async () => {
         try {
           await utapi.deleteFiles(file.key);
-          console.log(`ファイル ${file.key} を10秒後に削除しました。`);
         } catch (error) {
-          console.error(
-            `ファイル ${file.key} の削除中にエラーが発生しました:`,
-            error,
-          );
+          console.error(`ファイル ${file.key} の削除中にエラーが発生しました:`, error);
         }
       }, 10000);
     }),

@@ -11,7 +11,7 @@ import { validateAdminMiddleware } from "../../auth/validate-admin-middleware";
 import { AdminCourse } from "./types/admin-course";
 import { PurchaseCourse } from "./types/purchase-course";
 import type { Course } from "./types/course";
-import { Entity, Messages } from "../../common/message";
+import { Messages } from "../../common/message";
 import { CourseNotFoundError } from "../../error/course-not-found-error";
 import { PublishCourseWithMuxData } from "./types/publish-course-with-muxdata";
 import { insertCourseSchema } from "@/db/schema";
@@ -20,7 +20,7 @@ import { CourseRequiredFieldsEmptyError } from "../../error/course-required-fiel
 import { CourseNotFreeError } from "../../error/course-not-free-error";
 import { PurchaseAlreadyExistsError } from "../../error/purchase-already-exists-error";
 
-const Course = new Hono<{
+const CourseController = new Hono<{
   Variables: {
     courseUseCase: CourseUseCase;
   };
@@ -41,7 +41,6 @@ const Course = new Hono<{
     const courseUseCase = c.get("courseUseCase");
     try {
       const courses: AdminCourse[] = await courseUseCase.getCourses();
-      console.log(`講座一覧を取得しました: ${courses.length}件`);
       return c.json(courses);
     } catch (error) {
       return HandleError(c, error, "講座一覧取得エラーが発生しました。");
@@ -93,9 +92,7 @@ const Course = new Hono<{
     const auth = getAuth(c);
     const courseUseCase = c.get("courseUseCase");
     try {
-      const courses: PurchaseCourse[] = await courseUseCase.getPurchaseCourses(
-        auth!.userId!,
-      );
+      const courses: PurchaseCourse[] = await courseUseCase.getPurchaseCourses(auth!.userId!);
       return c.json(courses);
     } catch (error) {
       return HandleError(c, error, "購入済み講座一覧取得エラー");
@@ -110,25 +107,20 @@ const Course = new Hono<{
    * @throws CourseNotFoundError
    * @throws 講座取得エラー
    */
-  .get(
-    "/:course_id",
-    validateAdminMiddleware,
-    zValidator("param", z.object({ course_id: z.string() })),
-    async (c) => {
-      const { course_id: courseId } = c.req.valid("param");
-      const courseUseCase = c.get("courseUseCase");
-      try {
-        const course: Course = await courseUseCase.getCourse(courseId);
-        return c.json(course);
-      } catch (error) {
-        if (error instanceof CourseNotFoundError) {
-          console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
-        }
-        return HandleError(c, error, "講座取得エラー");
+  .get("/:course_id", validateAdminMiddleware, zValidator("param", z.object({ course_id: z.string() })), async (c) => {
+    const { course_id: courseId } = c.req.valid("param");
+    const courseUseCase = c.get("courseUseCase");
+    try {
+      const course: Course = await courseUseCase.getCourse(courseId);
+      return c.json(course);
+    } catch (error) {
+      if (error instanceof CourseNotFoundError) {
+        console.error(`存在しない講座です: ID ${courseId}`);
+        return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
       }
-    },
-  )
+      return HandleError(c, error, "講座取得エラー");
+    }
+  })
 
   /**
    * 公開講座取得API
@@ -147,13 +139,12 @@ const Course = new Hono<{
       const courseUseCase = c.get("courseUseCase");
       const auth = getAuth(c);
       try {
-        const course: PublishCourseWithMuxData =
-          await courseUseCase.getPublishCourse(courseId, auth!.userId!);
+        const course: PublishCourseWithMuxData = await courseUseCase.getPublishCourse(courseId, auth!.userId!);
         return c.json(course);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         return HandleError(c, error, "公開講座取得エラー");
       }
@@ -167,23 +158,16 @@ const Course = new Hono<{
    * @returns 登録した講座
    * @throws 講座登録エラー
    */
-  .post(
-    "/",
-    validateAdminMiddleware,
-    zValidator("json", insertCourseSchema.pick({ title: true })),
-    async (c) => {
-      const validatedData = c.req.valid("json");
-      const courseUseCase = c.get("courseUseCase");
-      try {
-        const course: Course = await courseUseCase.registerCourse(
-          validatedData.title,
-        );
-        return c.json(course);
-      } catch (error) {
-        return HandleError(c, error, "講座登録エラー");
-      }
-    },
-  )
+  .post("/", validateAdminMiddleware, zValidator("json", insertCourseSchema.pick({ title: true })), async (c) => {
+    const validatedData = c.req.valid("json");
+    const courseUseCase = c.get("courseUseCase");
+    try {
+      const course: Course = await courseUseCase.registerCourse(validatedData.title);
+      return c.json(course);
+    } catch (error) {
+      return HandleError(c, error, "講座登録エラー");
+    }
+  })
 
   /**
    * 講座タイトル編集API
@@ -203,15 +187,12 @@ const Course = new Hono<{
       const { course_id: courseId } = c.req.valid("param");
       const courseUseCase = c.get("courseUseCase");
       try {
-        const course: Course = await courseUseCase.updateCourseTitle(
-          courseId,
-          validatedData.title,
-        );
+        const course: Course = await courseUseCase.updateCourseTitle(courseId, validatedData.title);
         return c.json(course);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         return HandleError(c, error, "講座タイトル編集エラー");
       }
@@ -236,15 +217,12 @@ const Course = new Hono<{
       const { course_id: courseId } = c.req.valid("param");
       const courseUseCase = c.get("courseUseCase");
       try {
-        const course: Course = await courseUseCase.updateCourseDescription(
-          courseId,
-          validatedData.description,
-        );
+        const course: Course = await courseUseCase.updateCourseDescription(courseId, validatedData.description);
         return c.json(course);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         return HandleError(c, error, "講座詳細編集エラー");
       }
@@ -269,15 +247,12 @@ const Course = new Hono<{
       const { course_id: courseId } = c.req.valid("param");
       const courseUseCase = c.get("courseUseCase");
       try {
-        const course: Course = await courseUseCase.updateCourseThumbnail(
-          courseId,
-          validatedData.imageUrl,
-        );
+        const course: Course = await courseUseCase.updateCourseThumbnail(courseId, validatedData.imageUrl);
         return c.json(course);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         return HandleError(c, error, "講座サムネイル編集エラー");
       }
@@ -302,15 +277,12 @@ const Course = new Hono<{
       const { course_id: courseId } = c.req.valid("param");
       const courseUseCase = c.get("courseUseCase");
       try {
-        const course: Course = await courseUseCase.updateCoursePrice(
-          courseId,
-          validatedData.price,
-        );
+        const course: Course = await courseUseCase.updateCoursePrice(courseId, validatedData.price);
         return c.json(course);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         return HandleError(c, error, "講座価格編集エラー");
       }
@@ -335,20 +307,15 @@ const Course = new Hono<{
       const { course_id: courseId } = c.req.valid("param");
       const courseUseCase = c.get("courseUseCase");
       try {
-        const course: Course = await courseUseCase.updateCourseCategory(
-          courseId,
-          validatedData.categoryId,
-        );
+        const course: Course = await courseUseCase.updateCourseCategory(courseId, validatedData.categoryId);
         return c.json(course);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         } else if (error instanceof CategoryNotFoundError) {
-          console.error(
-            `存在しないカテゴリーです: ID ${validatedData.categoryId}`,
-          );
-          return c.json({ error: Messages.MSG_ERR_003(Entity.CATEGORY) }, 404);
+          console.error(`存在しないカテゴリーです: ID ${validatedData.categoryId}`);
+          return c.json({ error: Messages.MSG_ERR_003("CATEGORY") }, 404);
         }
         return HandleError(c, error, "講座カテゴリー編集エラー");
       }
@@ -373,15 +340,12 @@ const Course = new Hono<{
       const { course_id: courseId } = c.req.valid("param");
       const courseUseCase = c.get("courseUseCase");
       try {
-        const course: Course = await courseUseCase.updateCourseSourceUrl(
-          courseId,
-          validatedData.sourceUrl,
-        );
+        const course: Course = await courseUseCase.updateCourseSourceUrl(courseId, validatedData.sourceUrl);
         return c.json(course);
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         return HandleError(c, error, "講座ソースコード編集エラー");
       }
@@ -409,7 +373,7 @@ const Course = new Hono<{
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         return HandleError(c, error, "講座非公開エラー");
       }
@@ -438,7 +402,7 @@ const Course = new Hono<{
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         if (error instanceof CourseRequiredFieldsEmptyError) {
           return c.json({ error: Messages.MSG_ERR_004 }, 400);
@@ -469,7 +433,7 @@ const Course = new Hono<{
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         return HandleError(c, error, "講座公開エラー");
       }
@@ -498,7 +462,7 @@ const Course = new Hono<{
         return c.json({ status: "success" });
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         } else if (error instanceof CourseNotFreeError) {
           return c.json({ error: Messages.MSG_ERR_006 }, 400);
         } else if (error instanceof PurchaseAlreadyExistsError) {
@@ -509,4 +473,4 @@ const Course = new Hono<{
     },
   );
 
-export default Course;
+export default CourseController;

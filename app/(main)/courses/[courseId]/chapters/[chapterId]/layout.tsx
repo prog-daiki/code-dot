@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useGetPublishCourse } from "@/features/course/api/use-get-publish-course";
 import { PlayerChapter } from "./_components/player-chapter";
 import { redirect } from "next/navigation";
@@ -16,11 +17,7 @@ const ChapterLayout = ({
   children: React.ReactNode;
 }) => {
   const { courseId, chapterId } = params;
-  const {
-    data: publishCourse,
-    isLoading,
-    error,
-  } = useGetPublishCourse({
+  const { data: publishCourse, isLoading } = useGetPublishCourse({
     courseId,
   });
 
@@ -33,9 +30,8 @@ const ChapterLayout = ({
   }
 
   const course = publishCourse?.course;
-  const category = publishCourse?.category;
   const chapters = publishCourse?.chapters;
-  const purchased = publishCourse?.purchased!;
+  const purchased = publishCourse?.purchased ?? false;
   const currentChapter = chapters?.find((chapter) => chapter.id === chapterId);
 
   if (purchased === false) {
@@ -56,11 +52,15 @@ const ChapterLayout = ({
             <h2 className="text-md md:text-xl font-bold">{course?.title}</h2>
             <p className="text-muted-foreground text-sm">{course?.description}</p>
             <div className="flex space-x-4 text-xs lg:text-sm">
-              <p className="text-muted-foreground">更新日時：{new Date(course?.updateDate!).toLocaleDateString()}</p>
-              <p className="text-muted-foreground">作成日時：{new Date(course?.createDate!).toLocaleDateString()}</p>
+              <p className="text-muted-foreground">
+                更新日時：{new Date(course?.updateDate ?? new Date()).toLocaleDateString()}
+              </p>
+              <p className="text-muted-foreground">
+                作成日時：{new Date(course?.createDate ?? new Date()).toLocaleDateString()}
+              </p>
             </div>
             <div className="flex gap-4">
-              <Link href={course?.sourceUrl!} target="_blank">
+              <Link href={course?.sourceUrl ?? "#"} target="_blank">
                 <Button variant="outline" className="gap-2">
                   <FaGithub className="size-4" />
                   Source Code

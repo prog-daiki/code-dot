@@ -1,3 +1,4 @@
+import React from "react";
 import { jaJP } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter, Noto_Sans_JP } from "next/font/google";
