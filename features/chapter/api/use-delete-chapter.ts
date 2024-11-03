@@ -23,17 +23,13 @@ export const useDeleteChapter = (courseId: string, chapterId: string) => {
         updateDate: new Date(data.updateDate),
       };
     },
-    onSuccess: (updatedChapter) => {
-      queryClient.invalidateQueries({
-        queryKey: ["chapter", courseId, chapterId],
-      });
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["chapters", courseId],
       });
-      queryClient.setQueryData(["chapter", chapterId], updatedChapter);
       toast.success("チャプターを削除しました");
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("チャプターの削除に失敗しました");
     },
   });

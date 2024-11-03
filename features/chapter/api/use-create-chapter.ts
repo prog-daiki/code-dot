@@ -31,7 +31,7 @@ export const useCreateChapter = (courseId: string) => {
       toast.success("チャプターを作成しました");
       queryClient.invalidateQueries({ queryKey: ["chapters"] });
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("チャプターの作成に失敗しました");
     },
   });

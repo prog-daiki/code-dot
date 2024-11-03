@@ -32,7 +32,7 @@ export const useUpdateChapterDescription = (courseId: string, chapterId: string)
       queryClient.setQueryData(["chapter", chapterId], updatedChapter);
       toast.success("チャプターの詳細を更新しました");
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("チャプターの詳細の更新に失敗しました");
     },
   });

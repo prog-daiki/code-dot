@@ -33,7 +33,7 @@ export const useUpdateChapterUnPublish = (courseId: string, chapterId: string) =
       queryClient.setQueryData(["chapter", chapterId], updatedChapter);
       toast.success("チャプターを非公開しました");
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("チャプターの非公開に失敗しました");
     },
   });
