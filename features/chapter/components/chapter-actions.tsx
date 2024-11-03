@@ -20,31 +20,44 @@ interface ChapterActionsProps {
 export const ChapterActions = ({ courseId, chapterId, disabled, isPublished }: ChapterActionsProps) => {
   const router = useRouter();
   const confetti = useConfettiStore();
-  const deleteMutation = useDeleteChapter(courseId, chapterId);
-  const publishMutation = useUpdateChapterPublish(courseId, chapterId);
-  const unpublishMutation = useUpdateChapterUnPublish(courseId, chapterId);
 
-  const handlePublish = () => {
-    if (isPublished) {
-      unpublishMutation.mutate();
-    } else {
-      publishMutation.mutate();
-      confetti.onOpen();
+  const mutations = {
+    delete: useDeleteChapter(courseId, chapterId),
+    publish: useUpdateChapterPublish(courseId, chapterId),
+    unpublish: useUpdateChapterUnPublish(courseId, chapterId),
+  };
+
+  const isLoading = Object.values(mutations).some((mutation) => mutation.isPending);
+
+  const handlePublish = async () => {
+    try {
+      if (isPublished) {
+        await mutations.unpublish.mutateAsync();
+      } else {
+        await mutations.publish.mutateAsync();
+        confetti.onOpen();
+      }
+    } catch (error) {
+      console.error("チャプターの公開状態の更新に失敗しました:", error);
     }
   };
 
-  const handleDelete = () => {
-    deleteMutation.mutate();
-    router.push(`/admin/courses/${courseId}`);
+  const handleDelete = async () => {
+    try {
+      await mutations.delete.mutateAsync();
+      router.push(`/admin/courses/${courseId}`);
+    } catch (error) {
+      console.error("チャプターの削除に失敗しました:", error);
+    }
   };
 
   return (
     <div className="flex items-center gap-x-2">
-      <Button disabled={disabled || deleteMutation.isPending} onClick={handlePublish} size="sm" variant="outline">
+      <Button disabled={disabled || isLoading} onClick={handlePublish} size="sm" variant="outline">
         {isPublished ? "非公開にする" : "公開する"}
       </Button>
       <ConfirmModal onConfirm={handleDelete}>
-        <Button disabled={deleteMutation.isPending} size="sm">
+        <Button disabled={isLoading} size="sm">
           <Trash className="size-4" />
         </Button>
       </ConfirmModal>
