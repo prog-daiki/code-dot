@@ -3,9 +3,9 @@ import { logger } from "hono/logger";
 import { handle } from "hono/vercel";
 import { clerkMiddleware } from "@hono/clerk-auth";
 
-import Category from "./core/category";
 import Course from "./core/course";
 import Chapter from "./core/chapter";
+import CategoryController from "./core/category";
 
 export const runtime = "nodejs";
 
@@ -21,7 +21,7 @@ app.use(
 );
 
 const routes = app
-  .route("/categories", Category)
+  .route("/categories", CategoryController)
   .route("/courses", Course)
   .route("/courses/:course_id/chapters", Chapter);
 

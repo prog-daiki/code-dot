@@ -42,7 +42,7 @@ const Chapter = new Hono<{
     } catch (error) {
       if (error instanceof CourseNotFoundError) {
         console.error(`存在しない講座です: ID ${courseId}`);
-        return c.json(Messages.MSG_ERR_003(Entity.COURSE), 404);
+        return c.json(Messages.MSG_ERR_003("COURSE"), 404);
       }
       return HandleError(c, error, "チャプター一覧取得エラー");
     }
@@ -70,10 +70,10 @@ const Chapter = new Hono<{
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json(Messages.MSG_ERR_003(Entity.COURSE), 404);
+          return c.json(Messages.MSG_ERR_003("COURSE"), 404);
         } else if (error instanceof ChapterNotFoundError) {
           console.error(`存在しないチャプターです: ID ${chapterId}`);
-          return c.json(Messages.MSG_ERR_003(Entity.CHAPTER), 404);
+          return c.json(Messages.MSG_ERR_003("CHAPTER"), 404);
         }
         return HandleError(c, error, "チャプター取得エラー");
       }
@@ -103,7 +103,7 @@ const Chapter = new Hono<{
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json(Messages.MSG_ERR_003(Entity.COURSE), 404);
+          return c.json(Messages.MSG_ERR_003("COURSE"), 404);
         }
         return HandleError(c, error, "チャプター登録エラー");
       }
@@ -134,11 +134,11 @@ const Chapter = new Hono<{
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         if (error instanceof ChapterNotFoundError) {
           console.error(`存在しないチャプターです: ID ${chapterId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.CHAPTER) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("CHAPTER") }, 404);
         }
         return HandleError(c, error, "チャプタータイトル編集エラー");
       }
@@ -173,11 +173,11 @@ const Chapter = new Hono<{
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         if (error instanceof ChapterNotFoundError) {
           console.error(`存在しないチャプターです: ID ${chapterId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.CHAPTER) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("CHAPTER") }, 404);
         }
         return HandleError(c, error, "チャプター詳細編集エラー");
       }
@@ -208,11 +208,11 @@ const Chapter = new Hono<{
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         if (error instanceof ChapterNotFoundError) {
           console.error(`存在しないチャプターです: ID ${chapterId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.CHAPTER) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("CHAPTER") }, 404);
         }
         return HandleError(c, error, "チャプター動画編集エラー");
       }
@@ -247,7 +247,7 @@ const Chapter = new Hono<{
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         return HandleError(c, error, "チャプター並び替えエラー");
       }
@@ -276,11 +276,11 @@ const Chapter = new Hono<{
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         if (error instanceof ChapterNotFoundError) {
           console.error(`存在しないチャプターです: ID ${chapterId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.CHAPTER) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("CHAPTER") }, 404);
         }
         return HandleError(c, error, "チャプター削除エラー");
       }
@@ -309,11 +309,11 @@ const Chapter = new Hono<{
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         if (error instanceof ChapterNotFoundError) {
           console.error(`存在しないチャプターです: ID ${chapterId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.CHAPTER) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("CHAPTER") }, 404);
         }
         return HandleError(c, error, "チャプター非公開エラー");
       }
@@ -344,15 +344,15 @@ const Chapter = new Hono<{
       } catch (error) {
         if (error instanceof CourseNotFoundError) {
           console.error(`存在しない講座です: ID ${courseId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.COURSE) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("COURSE") }, 404);
         }
         if (error instanceof ChapterNotFoundError) {
           console.error(`存在しないチャプターです: ID ${chapterId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.CHAPTER) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("CHAPTER") }, 404);
         }
         if (error instanceof MuxDataNotFoundError) {
           console.error(`Muxデータが存在しません: チャプターID ${chapterId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.MUXDATA) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("MUXDATA") }, 404);
         }
         if (error instanceof ChapterRequiredFieldsEmptyError) {
           console.error(`チャプターの必須フィールドが空です: チャプターID ${chapterId}`);

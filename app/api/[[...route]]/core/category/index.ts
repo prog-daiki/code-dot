@@ -8,10 +8,10 @@ import { CategoryUseCase } from "./usecase/category-usecase";
 import { HandleError } from "../../error/handle-error";
 import { insertCategorySchema } from "@/db/schema";
 import { validateAdminMiddleware } from "../../auth/validate-admin-middleware";
-import { Entity, Messages } from "../../common/message";
+import { Messages } from "../../common/message";
 import { CategoryNotFoundError } from "../../error/category-not-found-error";
 
-const Category = new Hono<{
+const CategoryController = new Hono<{
   Variables: {
     categoryUseCase: CategoryUseCase;
   };
@@ -44,23 +44,16 @@ const Category = new Hono<{
    * @returns 登録したカテゴリー
    * @throws カテゴリー登録エラー
    */
-  .post(
-    "/",
-    validateAdminMiddleware,
-    zValidator("json", insertCategorySchema.pick({ name: true })),
-    async (c) => {
-      const validatedData = c.req.valid("json");
-      const categoryUseCase = c.get("categoryUseCase");
-      try {
-        const category: Category = await categoryUseCase.registerCategory(
-          validatedData.name,
-        );
-        return c.json(category);
-      } catch (error) {
-        return HandleError(c, error, "カテゴリー登録エラー");
-      }
-    },
-  )
+  .post("/", validateAdminMiddleware, zValidator("json", insertCategorySchema.pick({ name: true })), async (c) => {
+    const validatedData = c.req.valid("json");
+    const categoryUseCase = c.get("categoryUseCase");
+    try {
+      const category: Category = await categoryUseCase.registerCategory(validatedData.name);
+      return c.json(category);
+    } catch (error) {
+      return HandleError(c, error, "カテゴリー登録エラー");
+    }
+  })
 
   /**
    * カテゴリー編集API
@@ -80,15 +73,12 @@ const Category = new Hono<{
       const { category_id: categoryId } = c.req.valid("param");
       const categoryUseCase = c.get("categoryUseCase");
       try {
-        const category: Category = await categoryUseCase.updateCategoryName(
-          categoryId,
-          validatedData.name,
-        );
+        const category: Category = await categoryUseCase.updateCategoryName(categoryId, validatedData.name);
         return c.json(category);
       } catch (error) {
         if (error instanceof CategoryNotFoundError) {
           console.error(`存在しないカテゴリーです: ID ${categoryId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.CATEGORY) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("CATEGORY") }, 404);
         }
         return HandleError(c, error, "カテゴリー編集エラー");
       }
@@ -111,18 +101,16 @@ const Category = new Hono<{
       const { category_id: categoryId } = c.req.valid("param");
       const categoryUseCase = c.get("categoryUseCase");
       try {
-        const category: Category = await categoryUseCase.deleteCategory(
-          categoryId,
-        );
+        const category: Category = await categoryUseCase.deleteCategory(categoryId);
         return c.json(category);
       } catch (error) {
         if (error instanceof CategoryNotFoundError) {
           console.error(`存在しないカテゴリーです: ID ${categoryId}`);
-          return c.json({ error: Messages.MSG_ERR_003(Entity.CATEGORY) }, 404);
+          return c.json({ error: Messages.MSG_ERR_003("CATEGORY") }, 404);
         }
         return HandleError(c, error, "カテゴリー削除エラー");
       }
     },
   );
 
-export default Category;
+export default CategoryController;
