@@ -1,3 +1,4 @@
+import { Chapter } from "@/app/api/[[...route]]/core/chapter/types/chapter";
 import { PublishCourseWithMuxData } from "@/app/api/[[...route]]/core/course/types/publish-course-with-muxdata";
 import { client } from "@/lib/hono";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
@@ -26,7 +27,7 @@ export const useGetPublishCourse = ({
           createDate: new Date(data.course.createDate),
           updateDate: new Date(data.course.updateDate),
         },
-        chapters: data.chapters.map((chapter) => ({
+        chapters: data.chapters.map((chapter: Chapter) => ({
           ...chapter,
           createDate: new Date(chapter.createDate),
           updateDate: new Date(chapter.updateDate),
