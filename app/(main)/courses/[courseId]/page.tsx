@@ -14,11 +14,7 @@ import { usePurchaseFreeCourse } from "@/features/course/api/use-purchase-free-c
 
 const CoursePage = ({ params }: { params: { courseId: string } }) => {
   const { courseId } = params;
-  const {
-    data: publishCourse,
-    isLoading,
-    error,
-  } = useGetPublishCourse({
+  const { data: publishCourse, isLoading } = useGetPublishCourse({
     courseId,
   });
   const { mutate: purchaseFreeCourse } = usePurchaseFreeCourse(courseId);
@@ -110,7 +106,6 @@ const CoursePage = ({ params }: { params: { courseId: string } }) => {
                   key={chapter.id}
                   purchased={purchased}
                   chapterTitle={chapter.title}
-                  chapterDescription={chapter.description!}
                   courseId={params.courseId}
                   chapterId={chapter.id}
                 />

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useGetPublishCourse } from "@/features/course/api/use-get-publish-course";
 import { PlayerChapter } from "./_components/player-chapter";
 import { redirect } from "next/navigation";
@@ -16,11 +17,7 @@ const ChapterLayout = ({
   children: React.ReactNode;
 }) => {
   const { courseId, chapterId } = params;
-  const {
-    data: publishCourse,
-    isLoading,
-    error,
-  } = useGetPublishCourse({
+  const { data: publishCourse, isLoading } = useGetPublishCourse({
     courseId,
   });
 
@@ -33,7 +30,6 @@ const ChapterLayout = ({
   }
 
   const course = publishCourse?.course;
-  const category = publishCourse?.category;
   const chapters = publishCourse?.chapters;
   const purchased = publishCourse?.purchased!;
   const currentChapter = chapters?.find((chapter) => chapter.id === chapterId);

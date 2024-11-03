@@ -19,7 +19,7 @@ import { ChapterForm } from "@/features/chapter/components/chapter-form";
 
 const AdminCoursePage = ({ params }: { params: { courseId: string } }) => {
   const { courseId } = params;
-  const { data: course, isLoading: courseLoading, isError } = useGetCourse(courseId);
+  const { data: course, isLoading: courseLoading } = useGetCourse(courseId);
   const { data: chapters = [], isLoading: chaptersLoading } = useGetChapters(courseId);
 
   if (courseLoading || chaptersLoading) {

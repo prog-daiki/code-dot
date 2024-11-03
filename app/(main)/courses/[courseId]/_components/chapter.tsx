@@ -5,15 +5,14 @@ import { cn } from "@/lib/utils";
 import { Lock, PlayCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-type ChapterProps = {
+interface ChapterProps {
   purchased: boolean;
   chapterTitle: string;
-  chapterDescription?: string;
   courseId: string;
   chapterId: string;
-};
+}
 
-export const Chapter = ({ purchased, chapterTitle, chapterDescription, courseId, chapterId }: ChapterProps) => {
+export const Chapter = ({ purchased, chapterTitle, courseId, chapterId }: ChapterProps) => {
   const router = useRouter();
   const handleClick = () => {
     router.push(`/courses/${courseId}/chapters/${chapterId}`);

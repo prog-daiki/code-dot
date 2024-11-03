@@ -5,7 +5,7 @@ import { UploadDropzone } from "@/lib/upload-thing";
 import { toast } from "sonner";
 
 interface FileUploadProps {
-  onChange: (url?: string) => void;
+  onChange: (_url?: string) => void;
   endpoint: keyof OurFileRouter;
 }
 

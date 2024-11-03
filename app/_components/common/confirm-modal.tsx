@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,9 +27,7 @@ export const ConfirmModal = ({ children, onConfirm }: Props) => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>注意してください</AlertDialogTitle>
-            <AlertDialogDescription>
-              この操作は元に戻せません。本当によろしいですか？
-            </AlertDialogDescription>
+            <AlertDialogDescription>この操作は元に戻せません。本当によろしいですか？</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>キャンセル</AlertDialogCancel>

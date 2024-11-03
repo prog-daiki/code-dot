@@ -1,3 +1,5 @@
+import React from "react";
+
 interface CoursesLayoutProps {
   children: React.ReactNode;
 }

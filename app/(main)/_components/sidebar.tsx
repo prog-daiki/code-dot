@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 interface SidebarProps {
   isAdmin: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: (_open: boolean) => void;
 }
 
 interface NavItem {
