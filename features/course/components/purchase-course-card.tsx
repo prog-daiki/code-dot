@@ -46,7 +46,9 @@ export const PurchaseCourseCard = ({
               </span>
             </div>
           </div>
-          <p className="text-md font-semibold text-slate-700 md:text-sm">{formatPrice(price)}</p>
+          <p className="text-md font-semibold text-slate-700 md:text-sm mt-1">
+            {price === 0 ? "無料" : formatPrice(price)}
+          </p>
         </div>
       </div>
     </Link>
