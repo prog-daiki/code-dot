@@ -4,7 +4,7 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 
 import { HeaderLogo } from "@/app/_components/header/header-logo";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Sidebar } from "./sidebar";
 
 interface MobileHeaderNavProps {
@@ -16,11 +16,16 @@ export const MobileHeaderNav = ({ isAdmin }: MobileHeaderNavProps) => {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger className="pr-4 transition hover:bg-opacity-75 xl:hidden">
+      <SheetTrigger className="pr-4 transition hover:bg-opacity-75 xl:hidden" aria-label="メインメニューを開く">
         <Menu />
       </SheetTrigger>
-      <SheetContent className="bg-white" side="left">
-        <HeaderLogo />
+      <SheetContent className="bg-white" side="left" aria-describedby="sheet-description">
+        <SheetTitle>
+          <HeaderLogo />
+        </SheetTitle>
+        <div id="sheet-description" className="sr-only">
+          サイトのナビゲーションメニュー
+        </div>
         <Sidebar isAdmin={isAdmin} setOpen={setOpen} />
       </SheetContent>
     </Sheet>
