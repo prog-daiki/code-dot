@@ -14,7 +14,9 @@ export const usePurchaseFreeCourse = (courseId: string) => {
     onSuccess: () => {
       toast.success("講座を購入しました");
       queryClient.invalidateQueries({ queryKey: ["courses"] });
+      queryClient.invalidateQueries({ queryKey: ["publish-courses"] });
       queryClient.invalidateQueries({ queryKey: ["course", courseId] });
+      queryClient.invalidateQueries({ queryKey: ["publish-course", courseId] });
     },
     onError: () => {
       toast.error("講座の購入に失敗しました");

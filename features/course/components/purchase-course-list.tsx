@@ -3,6 +3,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { PurchaseCourseCard } from "./purchase-course-card";
 import { useGetPurchaseCourses } from "../api/use-get-purchase-courses";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const SKELETON_COUNT = 8;
 
@@ -42,7 +44,12 @@ export const PurchaseCourseList = ({ max_courses }: PurchaseCourseListProps) => 
         ))}
       </div>
       {courses.length === 0 && (
-        <div className="mt-10 text-center text-sm text-muted-foreground">購入した講座が見つかりませんでした</div>
+        <div className="mt-10 text-center text-sm text-muted-foreground">
+          <p className="mb-4">購入した講座が見つかりませんでした</p>
+          <Link href="/courses">
+            <Button variant="outline">講座一覧画面に戻る</Button>
+          </Link>
+        </div>
       )}
     </div>
   );

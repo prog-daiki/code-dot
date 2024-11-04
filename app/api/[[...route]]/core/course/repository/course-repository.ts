@@ -46,18 +46,12 @@ export class CourseRepository {
           'updateDate', ${chapter.updateDate}
         ) order by ${chapter.position}
       ) filter (where ${chapter.id} is not null), '[]')`.as("chapters"),
-        purchasedNumber:
-          sql<number>`coalesce(${purchaseCountSubquery.count}, 0)`.as(
-            "purchasedNumber",
-          ),
+        purchasedNumber: sql<number>`coalesce(${purchaseCountSubquery.count}, 0)`.as("purchasedNumber"),
       })
       .from(course)
       .leftJoin(chapter, eq(course.id, chapter.courseId))
       .leftJoin(category, eq(course.categoryId, category.id))
-      .leftJoin(
-        purchaseCountSubquery,
-        eq(course.id, purchaseCountSubquery.courseId),
-      )
+      .leftJoin(purchaseCountSubquery, eq(course.id, purchaseCountSubquery.courseId))
       .groupBy(course.id, category.id, purchaseCountSubquery.count)
       .orderBy(desc(course.createDate));
     return data;
@@ -69,11 +63,7 @@ export class CourseRepository {
    * @param categoryId
    * @returns
    */
-  async getPublishCourses(
-    userId: string,
-    title?: string,
-    categoryId?: string,
-  ): Promise<PublishCourse[]> {
+  async getPublishCourses(userId: string, title?: string, categoryId?: string): Promise<PublishCourse[]> {
     const data: PublishCourse[] = await db
       .select({
         course,
@@ -92,21 +82,12 @@ export class CourseRepository {
             'updateDate', ${chapter.updateDate}
           ) order by ${chapter.position}
         ) filter (where ${chapter.id} is not null), '[]')`.as("chapters"),
-        purchased:
-          sql<boolean>`case when ${purchase.id} is not null then true else false end`.as(
-            "purchased",
-          ),
+        purchased: sql<boolean>`case when ${purchase.id} is not null then true else false end`.as("purchased"),
       })
       .from(course)
       .leftJoin(chapter, eq(course.id, chapter.courseId))
       .leftJoin(category, eq(course.categoryId, category.id))
-      .leftJoin(
-        purchase,
-        and(
-          eq(course.id, purchase.courseId),
-          userId ? eq(purchase.userId, userId) : undefined,
-        ),
-      )
+      .leftJoin(purchase, and(eq(course.id, purchase.courseId), userId ? eq(purchase.userId, userId) : undefined))
       .where(
         and(
           eq(course.publishFlag, true),
@@ -148,16 +129,10 @@ export class CourseRepository {
       .from(course)
       .leftJoin(chapter, eq(course.id, chapter.courseId))
       .leftJoin(category, eq(course.categoryId, category.id))
-      .innerJoin(
-        purchase,
-        and(
-          eq(course.id, purchase.courseId),
-          userId ? eq(purchase.userId, userId) : undefined,
-        ),
-      )
+      .innerJoin(purchase, and(eq(course.id, purchase.courseId), userId ? eq(purchase.userId, userId) : undefined))
       .where(and(eq(course.publishFlag, true), eq(chapter.publishFlag, true)))
       .groupBy(course.id, category.id, purchase.id)
-      .orderBy(desc(course.createDate));
+      .orderBy(desc(purchase.createDate));
     return data;
   }
 
@@ -167,10 +142,7 @@ export class CourseRepository {
    * @returns {Promise<Course | null>} 講座
    */
   async getCourseById(courseId: string): Promise<Course> {
-    const [data]: Course[] = await db
-      .select()
-      .from(course)
-      .where(eq(course.id, courseId));
+    const [data]: Course[] = await db.select().from(course).where(eq(course.id, courseId));
     return data;
   }
 
@@ -189,10 +161,7 @@ export class CourseRepository {
    * @param courseId
    * @returns
    */
-  async getPublishCourse(
-    courseId: string,
-    userId?: string,
-  ): Promise<PublishCourseWithMuxData> {
+  async getPublishCourse(courseId: string, userId?: string): Promise<PublishCourseWithMuxData> {
     const [data]: PublishCourseWithMuxData[] = await db
       .select({
         course,
@@ -224,29 +193,14 @@ export class CourseRepository {
             ORDER BY ${chapter.position} ASC
           ) filter (where ${chapter.id} is not null)
         `.as("chapters"),
-        purchased:
-          sql<boolean>`case when ${purchase.id} is not null then true else false end`.as(
-            "purchased",
-          ),
+        purchased: sql<boolean>`case when ${purchase.id} is not null then true else false end`.as("purchased"),
       })
       .from(course)
       .leftJoin(chapter, eq(course.id, chapter.courseId))
       .leftJoin(category, eq(course.categoryId, category.id))
       .leftJoin(muxData, eq(chapter.id, muxData.chapterId))
-      .leftJoin(
-        purchase,
-        and(
-          eq(course.id, purchase.courseId),
-          userId ? eq(purchase.userId, userId) : undefined,
-        ),
-      )
-      .where(
-        and(
-          eq(course.id, courseId),
-          eq(course.publishFlag, true),
-          eq(chapter.publishFlag, true),
-        ),
-      )
+      .leftJoin(purchase, and(eq(course.id, purchase.courseId), userId ? eq(purchase.userId, userId) : undefined))
+      .where(and(eq(course.id, courseId), eq(course.publishFlag, true), eq(chapter.publishFlag, true)))
       .groupBy(course.id, category.id, purchase.id);
     return data;
   }
@@ -276,10 +230,7 @@ export class CourseRepository {
    * @param updateData 更新するデータ
    * @returns 更新された講座
    */
-  async updateCourse(
-    courseId: string,
-    updateData: Partial<Omit<typeof course.$inferInsert, "id" | "createDate">>,
-  ) {
+  async updateCourse(courseId: string, updateData: Partial<Omit<typeof course.$inferInsert, "id" | "createDate">>) {
     const currentJstDate: Date = getCurrentJstDate();
     const [data]: Course[] = await db
       .update(course)
@@ -298,10 +249,7 @@ export class CourseRepository {
    * @returns
    */
   async deleteCourse(courseId: string): Promise<Course> {
-    const [data] = await db
-      .delete(course)
-      .where(eq(course.id, courseId))
-      .returning();
+    const [data] = await db.delete(course).where(eq(course.id, courseId)).returning();
     return data;
   }
 }
