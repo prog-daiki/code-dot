@@ -3,6 +3,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetPublishCourses } from "../api/use-get-publish-courses";
 import { CourseCard } from "./course-card";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface CourseListProps {
   searchParams: {
@@ -48,7 +50,10 @@ export const CourseList = ({ searchParams }: CourseListProps) => {
       </div>
       {courses.length === 0 && (
         <div className="mt-10 text-center text-sm text-muted-foreground">
-          講座が見つかりませんでした
+          <p className="mb-4">講座が見つかりませんでした</p>
+          <Link href="/courses">
+            <Button variant="outline">検索条件をクリア</Button>
+          </Link>
         </div>
       )}
     </>
