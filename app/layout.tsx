@@ -22,7 +22,7 @@ const notoSansJP = Noto_Sans_JP({
 
 export const metadata: Metadata = {
   title: "code.",
-  description: "code. -- プログラミング学習サービス",
+  description: "code. | プログラミング学習サービス",
 };
 
 export default function RootLayout({
