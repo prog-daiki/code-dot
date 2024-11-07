@@ -13,11 +13,11 @@ const app = new Hono().basePath("/api");
 
 app.use(
   "*",
+  logger(),
   clerkMiddleware({
     publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     secretKey: process.env.CLERK_SECRET_KEY,
   }),
-  logger(),
 );
 
 app.route("/categories", CategoryController).route("/courses", Course).route("/courses/:course_id/chapters", Chapter);
