@@ -6,13 +6,11 @@ import { PublishCourse } from "@/app/api/[[...route]]/core/course/types/publish-
 interface PublishCoursesParams {
   title: string;
   categoryId: string;
-  initialData?: PublishCourse[];
 }
 
 export const useGetPublishCourses = ({
   title,
   categoryId,
-  initialData,
 }: PublishCoursesParams): UseQueryResult<PublishCourse[], Error> => {
   return useQuery<PublishCourse[], Error>({
     queryKey: ["publish-courses", title, categoryId],
@@ -40,6 +38,5 @@ export const useGetPublishCourses = ({
       }));
       return formattedData;
     },
-    initialData,
   });
 };

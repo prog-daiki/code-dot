@@ -2,7 +2,7 @@ import { PurchaseCourse } from "@/app/api/[[...route]]/core/course/types/purchas
 import { client } from "@/lib/hono";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
-export const useGetPurchaseCourses = (initialData?: PurchaseCourse[]): UseQueryResult<PurchaseCourse[], Error> => {
+export const useGetPurchaseCourses = (): UseQueryResult<PurchaseCourse[], Error> => {
   return useQuery<PurchaseCourse[], Error>({
     queryKey: ["purchase-courses"],
     queryFn: async () => {
@@ -28,6 +28,5 @@ export const useGetPurchaseCourses = (initialData?: PurchaseCourse[]): UseQueryR
       }));
       return purchaseCourses;
     },
-    initialData,
   });
 };

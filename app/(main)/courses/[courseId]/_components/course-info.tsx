@@ -11,17 +11,14 @@ import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { FaGithub } from "react-icons/fa";
 import { Chapter } from "./chapter";
-import { PublishCourseWithMuxData } from "@/app/api/[[...route]]/core/course/types/publish-course-with-muxdata";
 
 interface CourseInfoProps {
   courseId: string;
-  initialData: PublishCourseWithMuxData;
 }
 
-export const CourseInfo = ({ courseId, initialData }: CourseInfoProps) => {
+export const CourseInfo = ({ courseId }: CourseInfoProps) => {
   const { data: publishCourse, isLoading } = useGetPublishCourse({
     courseId,
-    initialData,
   });
   const { mutate: purchaseFreeCourse } = usePurchaseFreeCourse(courseId);
   const router = useRouter();

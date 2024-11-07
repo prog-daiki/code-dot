@@ -5,17 +5,15 @@ import { PurchaseCourseCard } from "./purchase-course-card";
 import { useGetPurchaseCourses } from "../api/use-get-purchase-courses";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { PurchaseCourse } from "@/app/api/[[...route]]/core/course/types/purchase-course";
 
 const SKELETON_COUNT = 8;
 
 interface PurchaseCourseListProps {
   max_courses?: number;
-  initialData?: PurchaseCourse[];
 }
 
-export const PurchaseCourseList = ({ max_courses, initialData }: PurchaseCourseListProps) => {
-  const coursesQuery = useGetPurchaseCourses(initialData);
+export const PurchaseCourseList = ({ max_courses }: PurchaseCourseListProps) => {
+  const coursesQuery = useGetPurchaseCourses();
   const courses = coursesQuery.data || [];
 
   if (coursesQuery.isLoading) {
