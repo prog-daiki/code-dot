@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetCategories } from "../api/use-get-categories";
 import { CategoryItem } from "./category-item";
-import { Category } from "@/app/api/[[...route]]/core/category/types/category";
 
 const SKELETON_COUNT = 10;
 
@@ -17,12 +16,8 @@ const CategoriesSkeleton = () => (
   </div>
 );
 
-type CategoryListProps = {
-  initialData?: Category[];
-};
-
-export const CategoryList = ({ initialData }: CategoryListProps) => {
-  const { data: categories = [], isLoading } = useGetCategories(initialData);
+export const CategoryList = () => {
+  const { data: categories = [], isLoading } = useGetCategories();
   const searchParams = useSearchParams();
   const currentCategoryId = searchParams.get("categoryId");
 

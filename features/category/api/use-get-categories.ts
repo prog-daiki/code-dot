@@ -5,7 +5,7 @@ import { client } from "@/lib/hono";
 
 type ResponseType = Category[];
 
-export const useGetCategories = (initialData?: ResponseType): UseQueryResult<ResponseType, Error> => {
+export const useGetCategories = (): UseQueryResult<ResponseType, Error> => {
   return useQuery<ResponseType, Error>({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -17,6 +17,5 @@ export const useGetCategories = (initialData?: ResponseType): UseQueryResult<Res
 
       return response.json();
     },
-    initialData,
   });
 };
