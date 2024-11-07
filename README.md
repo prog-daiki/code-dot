@@ -39,7 +39,7 @@ CSS フレームワーク：Tailwind CSS <br>
 主要パッケージ：React Query <br>
 インフラ：Vercel
 
-CI / CD：GitHub Actions
+CI / CD：Vercel 標準の CI/CD
 
 認証: clerk
 
