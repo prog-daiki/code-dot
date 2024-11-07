@@ -5,20 +5,23 @@ import { useGetPublishCourses } from "../api/use-get-publish-courses";
 import { CourseCard } from "./course-card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { PublishCourse } from "@/app/api/[[...route]]/core/course/types/publish-course";
 
 interface CourseListProps {
   searchParams: {
     title: string;
     categoryId: string;
   };
+  initialData: PublishCourse[];
 }
 
 const SKELETON_COUNT = 8;
 
-export const CourseList = ({ searchParams }: CourseListProps) => {
+export const CourseList = ({ searchParams, initialData }: CourseListProps) => {
   const coursesQuery = useGetPublishCourses({
     title: searchParams.title,
     categoryId: searchParams.categoryId,
+    initialData,
   });
   const courses = coursesQuery.data || [];
 
