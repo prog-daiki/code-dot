@@ -16,7 +16,7 @@ https://code-dot-nine.vercel.app
 
 ### ▼ 紹介記事(zenn)
 
-TODO : 記事の追加 <br>
+https://zenn.dev/prog_daiki/articles/dc324b3b4ce918
 開発背景や、使用した技術についてまとめています。
 
 ### ▼ 開発者 Twitter
