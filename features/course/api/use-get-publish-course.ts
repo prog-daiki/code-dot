@@ -5,10 +5,8 @@ import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
 export const useGetPublishCourse = ({
   courseId,
-  initialData,
 }: {
   courseId: string;
-  initialData?: PublishCourseWithMuxData;
 }): UseQueryResult<PublishCourseWithMuxData, Error> => {
   return useQuery<PublishCourseWithMuxData, Error>({
     queryKey: ["publish-course", courseId],
@@ -37,6 +35,5 @@ export const useGetPublishCourse = ({
       };
       return course;
     },
-    initialData,
   });
 };
