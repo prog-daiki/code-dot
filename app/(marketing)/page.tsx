@@ -18,9 +18,11 @@ const MarketingPage = async () => {
           src="/images/hero.png"
           width={500}
           height={500}
-          priority={true} // fetchpriorityの代わりにpriorityを使用
+          priority={true}
+          loading="eager"
           className="rounded-md"
-          quality={75} // 画質と容量のバランスを取る
+          quality={75}
+          sizes="(max-width: 768px) 100vw, 500px"
         />
       </div>
 
