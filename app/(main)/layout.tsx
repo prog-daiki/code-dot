@@ -1,7 +1,4 @@
 import React from "react";
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-
 import { Footer } from "../_components/footer/footer";
 import { ConfettiProvider } from "@/providers/confetti-provider";
 import { MainHeader } from "./_components/main-header";
@@ -11,11 +8,6 @@ interface MainLayoutProps {
 }
 
 const MainLayout = async ({ children }: MainLayoutProps) => {
-  const { userId } = await auth();
-  if (!userId) {
-    return redirect("/");
-  }
-
   return (
     <>
       <ConfettiProvider />

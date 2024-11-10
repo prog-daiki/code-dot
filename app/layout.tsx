@@ -31,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider localization={jaJP}>
+    <ClerkProvider localization={jaJP} afterSignOutUrl="/">
       <html lang="ja" className={`${notoSansJP.variable} font-sans`}>
         <body className={`${inter.variable} ${notoSansJP.variable}`}>
           <QueryProvider>
