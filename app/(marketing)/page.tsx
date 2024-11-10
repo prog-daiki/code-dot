@@ -19,10 +19,8 @@ const MarketingPage = async () => {
           width={500}
           height={500}
           priority={true}
-          loading="eager"
           className="rounded-md"
-          quality={75}
-          sizes="(max-width: 768px) 100vw, 500px"
+          quality={50}
         />
       </div>
 
