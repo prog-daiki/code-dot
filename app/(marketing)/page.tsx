@@ -20,7 +20,7 @@ const MarketingPage = async () => {
             <Button className="flex items-center gap-x-2 text-md">無料で始める</Button>
           </SignInButton>
         </div>
-        <Image src="/images/hero.png" alt="marketing" width={500} height={500} className="rounded-md" />
+        <Image src="/images/hero.png" alt="marketing" width={500} height={500} className="rounded-md" priority />
       </div>
 
       <div className="border-t bg-slate-50 p-4 mb-16">
