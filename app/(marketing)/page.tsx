@@ -13,7 +13,15 @@ const MarketingPage = async () => {
             <Button className="flex items-center gap-x-2 text-md">無料で始める</Button>
           </SignInButton>
         </div>
-        <Image src="/images/hero.png" alt="marketing" width={500} height={500} className="rounded-md" priority />
+        <Image
+          alt="marketing"
+          src="/images/hero.png"
+          width={500}
+          height={500}
+          priority={true} // fetchpriorityの代わりにpriorityを使用
+          className="rounded-md"
+          quality={75} // 画質と容量のバランスを取る
+        />
       </div>
 
       <div className="border-t bg-slate-50 p-4 mb-16">
