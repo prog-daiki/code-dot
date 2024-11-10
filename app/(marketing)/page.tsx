@@ -1,15 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { SignInButton } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 
 const MarketingPage = async () => {
-  const { userId } = await auth();
-  if (userId) {
-    return redirect("/courses");
-  }
-
   return (
     <div className="flex flex-col items-center justify-center max-w-5xl mx-auto mt-16">
       <div className="flex flex-col md:flex-row items-center justify-center gap-8">
