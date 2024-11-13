@@ -36,7 +36,7 @@ export const AdminCourseList = ({ max_courses }: AdminCourseListProps) => {
         {filteredCourses.map((course) => (
           <AdminCourseCard
             category={course.category?.name ?? "未分類"}
-            chaptersLength={course.chapters.length}
+            chaptersLength={course.chapterLength}
             id={course.course.id}
             imageUrl={course.course.imageUrl ?? "/images/no-image.png"}
             key={course.course.id}
@@ -48,9 +48,7 @@ export const AdminCourseList = ({ max_courses }: AdminCourseListProps) => {
         ))}
       </div>
       {courses.length === 0 && (
-        <div className="mt-10 text-center text-sm text-muted-foreground">
-          講座が見つかりませんでした
-        </div>
+        <div className="mt-10 text-center text-sm text-muted-foreground">講座が見つかりませんでした</div>
       )}
     </div>
   );
