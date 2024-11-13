@@ -19,40 +19,18 @@ export class CourseRepository {
    * @returns {Promise<AdminCourse[]>} 講座一覧
    */
   async getAllCourses(): Promise<AdminCourse[]> {
-    const purchaseCountSubquery = db
-      .select({
-        courseId: purchase.courseId,
-        count: sql<number>`count(*)`.as("count"),
-      })
-      .from(purchase)
-      .groupBy(purchase.courseId)
-      .as("purchaseCount");
-
     const data = await db
       .select({
         course,
         category,
-        chapters: sql<(typeof chapter.$inferSelect)[]>`
-      coalesce(json_agg(
-        json_build_object(
-          'id', ${chapter.id},
-          'title', ${chapter.title},
-          'description', ${chapter.description},
-          'videoUrl', ${chapter.videoUrl},
-          'position', ${chapter.position},
-          'publishFlag', ${chapter.publishFlag},
-          'courseId', ${chapter.courseId},
-          'createDate', ${chapter.createDate},
-          'updateDate', ${chapter.updateDate}
-        ) order by ${chapter.position}
-      ) filter (where ${chapter.id} is not null), '[]')`.as("chapters"),
-        purchasedNumber: sql<number>`coalesce(${purchaseCountSubquery.count}, 0)`.as("purchasedNumber"),
+        chapterLength: sql<number>`count(${chapter.id})::integer`.as("chapters"),
+        purchasedNumber: sql<number>`count(${purchase.id})::integer`.as("purchasedNumber"),
       })
       .from(course)
-      .leftJoin(chapter, eq(course.id, chapter.courseId))
+      .leftJoin(chapter, and(eq(course.id, chapter.courseId), eq(chapter.publishFlag, true)))
       .leftJoin(category, eq(course.categoryId, category.id))
-      .leftJoin(purchaseCountSubquery, eq(course.id, purchaseCountSubquery.courseId))
-      .groupBy(course.id, category.id, purchaseCountSubquery.count)
+      .leftJoin(purchase, eq(course.id, purchase.courseId))
+      .groupBy(course.id, category.id)
       .orderBy(desc(course.createDate));
     return data;
   }
